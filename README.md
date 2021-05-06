@@ -111,7 +111,7 @@ as they are checked in.
 
 ## Release Notes
 
-See the [changelog](CHANGELOG.rst)
+See the [changelog](https://github.com/ansible-collections/logicmonitor/blob/main/CHANGELOG.rst)
 
 ## More information
 
@@ -124,4 +124,4 @@ See the [changelog](CHANGELOG.rst)
 
 GNU General Public License v3.0 or later.
 
-See [LICENSE](LICENSE) to see the full text.
+See [LICENSE](https://github.com/ansible-collections/logicmonitor/blob/main/LICENSE) to see the full text.
