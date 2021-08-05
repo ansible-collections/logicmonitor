@@ -194,14 +194,11 @@ Manage LogicMonitor device groups
         <li>True</li>
         <li>False</li>
       </ul>
-      <b>Default:</b>
-      <ul>
-        <li>False</li>
-      </ul>
     </td>
     <td>
       <ul>
         <li>A boolean flag to enable/disable alerting for a device group.</li>
+        <li>Defaults to False when creating a device.</li>
         <li>Optional for managing device groups (action=add or action=update).</li>
       </ul>
     </td>

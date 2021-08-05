@@ -186,6 +186,20 @@ Gather information about LogicMonitor objects (i.e. collectors, devices, device 
       </ul>
     </td>
   </tr>
+  <tr>
+    <td colspan="1">
+      <b>size</b>
+      <div>
+        <span>integer</span>
+      </div>
+    </td>
+    <td></td>
+    <td>
+      <ul>
+        <li>The number of resources/results to display (default is 250 & max is 1000)</li>
+      </ul>
+    </td>
+  </tr>
 </table>
 
 <a name="examples"></a>
