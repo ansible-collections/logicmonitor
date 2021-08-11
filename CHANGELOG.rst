@@ -4,6 +4,14 @@ LogicMonitor Ansible Collection Release Notes
 
 .. contents:: Topics
 
+v1.1.4
+======
+
+Bug Fixes
+-----------
+
+- Fix ignore file permissions
+
 v1.1.3
 ======
 
