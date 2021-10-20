@@ -4,6 +4,19 @@ LogicMonitor Ansible Collection Release Notes
 
 .. contents:: Topics
 
+v1.1.5
+======
+
+Bug Fixes
+-----------
+
+- Fix collector installation to accurately use path params ``version`` & ``size``.
+
+Feature Enhancement
+-------------------
+
+- lm_collector: Add ``id`` & ``description`` field to allow users to install an existing collector in action=add via its id or description.
+
 v1.1.4
 ======
 

@@ -54,7 +54,7 @@ Manage LogicMonitor collectors
     <td>
       <ul>
         <li>The action you wish to perform on the collector.</li>
-        <li><b>Add:</b> Add a collector to your LogicMonitor account & install it on Linux machine.</li>
+        <li><b>Add:</b> Install existing collector on a Linux machine or add a new collector to your LogicMonitor account & install it.</li>
         <li><b>Update:</b> Update a collector in your LogicMonitor account.</li>
         <li><b>Remove:</b> Remove a collector from your LogicMonitor account & uninstall it from Linux machine.</li>
         <li><b>SDT:</b> Schedule downtime for a collector in your LogicMonitor account.</li>
@@ -117,6 +117,7 @@ Manage LogicMonitor collectors
       <ul>
         <li>The ID of the collector.</li>
         <li>Required for update, remove, sdt if description isn't provided.</li>
+        <li>Optional for action=add (only used when installing an existing collector).</li>
       </ul>
     </td>
   </tr>
@@ -133,6 +134,7 @@ Manage LogicMonitor collectors
         <li>The description of the collector.</li>
         <li>Optional for action=add.</li>
         <li>Required for update, remove, sdt if id isn't provided.</li>
+        <li>Optional for action=add (only used when installing an existing collector).</li>
       </ul>
     </td>
   </tr>
