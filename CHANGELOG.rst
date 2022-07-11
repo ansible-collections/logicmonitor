@@ -4,6 +4,14 @@ LogicMonitor Ansible Collection Release Notes
 
 .. contents:: Topics
 
+v1.1.6
+======
+
+Bug Fixes
+-----------
+
+- Fix update action overwriting custom properties.
+
 v1.1.5
 ======
 
