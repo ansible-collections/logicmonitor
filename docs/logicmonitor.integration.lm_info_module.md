@@ -1,6 +1,6 @@
 # logicmonitor.integration.lm_info
 
-Gather information about LogicMonitor objects (i.e. collectors, devices, device groups).
+Gather information about LogicMonitor objects (i.e. collectors, devices, device groups, etc).
 
 - [Synopsis](#synopsis)
 - [Requirements](#requirements)
@@ -13,7 +13,7 @@ Gather information about LogicMonitor objects (i.e. collectors, devices, device 
 ## Synopsis
 
 - This module can be used to gather information about LogicMonitor objects (i.e. collectors, collector groups, devices,
-  device groups).
+  device groups, etc).
 
 <a name="requirements"></a>
 
@@ -49,6 +49,8 @@ Gather information about LogicMonitor objects (i.e. collectors, devices, device 
         <li>collector_group</li>
         <li>device</li>
         <li>device_group</li>
+        <li>alert_rule</li>
+        <li>escalation_chain</li>
       </ul>
     </td>
     <td>
@@ -111,7 +113,7 @@ Gather information about LogicMonitor objects (i.e. collectors, devices, device 
     <td></td>
     <td>
       <ul>
-        <li>The ID of the collector, device, or device group to target.</li>
+        <li>The ID of the collector, device, device group, alert rule, etc to target.</li>
       </ul>
     </td>
   </tr>
@@ -125,7 +127,7 @@ Gather information about LogicMonitor objects (i.e. collectors, devices, device 
     <td></td>
     <td>
       <ul>
-        <li>The name of the collector group to target.</li>
+        <li>The name of the collector group, alert rule, escalation chain, etc to target.</li>
       </ul>
     </td>
   </tr>
@@ -330,6 +332,67 @@ Gather information about LogicMonitor objects (i.e. collectors, devices, device 
     - name: Output
       debug:
         msg: '{{ output }}'
+
+---
+- name: Gather information about all alert rules
+  hosts: localhost
+  tasks:
+    - name: Running module
+      lm_info:
+        target: alert_rule
+        company: batman
+        access_id: "id123"
+        access_key: "key123"
+      register: output
+    - name: Output
+      debug:
+        msg: '{{ output }}'
+        
+---        
+- name: Gather information about a alert rule
+  hosts: localhost
+  tasks:
+    - name: Running module
+      lm_info:
+        target: alert_rule
+        company: batman
+        access_id: "id123"
+        access_key: "key123"
+        id: 16
+      register: output
+    - name: Output
+      debug:
+        msg: '{{ output }}'
+---        
+- name: Gather information about all escalation chains
+  hosts: localhost
+  tasks:
+    - name: Running module
+      lm_info:
+        target: escalation_chain
+        company: batman
+        access_id: "id123"
+        access_key: "key123"
+      register: output
+    - name: Output
+      debug:
+        msg: '{{ output }}'
+---        
+- name: Gather information about an escalation chain
+  hosts: localhost
+  tasks:
+    - name: Running module
+      lm_info:
+        target: escalation_chain
+        company: batman
+        access_id: "id123"
+        access_key: "key123"
+        id: 16
+      register: output
+    - name: Output
+      debug:
+        msg: '{{ output }}'
+
 ```
 
 <a name="return-values"></a>

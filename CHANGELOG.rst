@@ -4,6 +4,26 @@ LogicMonitor Ansible Collection Release Notes
 
 .. contents:: Topics
 
+v1.2.0
+======
+
+New Modules
+-----------
+
+- lm_alert_rule: Manage LogicMonitor alert rules (i.e. add, update, remove)
+- lm_escalation_chain: Manage LogicMonitor escalation chains (i.e. add, update, remove)
+- lm_website_check: Manage LogicMonitor website checks (i.e. sdt a ping or web check)
+- lm_otel_collector: Manage LogicMonitor otel collectors (i.e. add, remove)
+
+Feature Enhancement
+-------------------
+
+- lm_device: Add ``optype`` field to allow user to perform different operation on custom properties while updating.
+- lm_collector: Add ``optype`` field to allow user to perform different operation on custom properties while updating.
+- lm_device_group: Add ``optype`` field to allow user to perform different operation on custom properties while updating.
+- lm_collector_group: Add ``optype`` field to allow user to perform different operation on custom properties while updating.
+
+
 v1.1.6
 ======
 

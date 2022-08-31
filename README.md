@@ -99,9 +99,13 @@ Name | Description
 [logicmonitor.integration.lm_info](https://github.com/ansible-collections/logicmonitor/blob/main/docs/logicmonitor.integration.lm_info_module.md)|Gather information about LogicMonitor objects (i.e. collectors, collector groups, devices, device groups)
 [logicmonitor.integration.lm_collector](https://github.com/ansible-collections/logicmonitor/blob/main/docs/logicmonitor.integration.lm_collector_module.md)|Manage LogicMonitor collectors (i.e. add, update, remove, sdt)
 [logicmonitor.integration.lm_collector_group](https://github.com/ansible-collections/logicmonitor/blob/main/docs/logicmonitor.integration.lm_collector_group_module.md)|Manage LogicMonitor collector groups (i.e. add, update, remove)
+[logicmonitor.integration.lm_otel_collector](https://github.com/ansible-collections/logicmonitor/blob/main/docs/logicmonitor.integration.lm_otel_collector_module.md)|Manage LogicMonitor otel collectors (i.e. add, remove)
 [logicmonitor.integration.lm_device](https://github.com/ansible-collections/logicmonitor/blob/main/docs/logicmonitor.integration.lm_device_module.md)|Manage LogicMonitor devices (i.e. add, update, remove, sdt)
 [logicmonitor.integration.lm_device_group](https://github.com/ansible-collections/logicmonitor/blob/main/docs/logicmonitor.integration.lm_device_group_module.md)|Manage LogicMonitor device groups (i.e. add, update, remove, sdt)
+[logicmonitor.integration.lm_alert_rule](https://github.com/ansible-collections/logicmonitor/blob/main/docs/logicmonitor.integration.lm_alert_rule_module.md)|Manage LogicMonitor alert rules (i.e. add, update, remove)
+[logicmonitor.integration.lm_escalation_chain](https://github.com/ansible-collections/logicmonitor/blob/main/docs/logicmonitor.integration.lm_escalation_chain_module.md)|Manage LogicMonitor escalation chains (i.e. add, update, remove)
 [logicmonitor.integration.lm_datasource](https://github.com/ansible-collections/logicmonitor/blob/main/docs/logicmonitor.integration.lm_datasource_module.md)|Manage LogicMonitor device datasources (i.e. sdt)
+[logicmonitor.integration.lm_website_check](https://github.com/ansible-collections/logicmonitor/blob/main/docs/logicmonitor.integration.lm_website_check_module.md)|Manage LogicMonitor website checks (i.e. sdt a ping or web check)
 
 ## Contributing
 

@@ -1,6 +1,6 @@
-# logicmonitor.integration.lm_datasource
+# logicmonitor.integration.lm_website_check
 
-Manage LogicMonitor device datasources
+Manage LogicMonitor website checks
 
 - [Synopsis](#synopsis)
 - [Requirements](#requirements)
@@ -12,7 +12,7 @@ Manage LogicMonitor device datasources
 
 ## Synopsis
 
-- This module can be used to manage LogicMonitor device datasources (i.e. SDT).
+- This module can be used to manage LogicMonitor website checks (i.e. SDT a ping or web check).
 
 <a name="requirements"></a>
 
@@ -49,8 +49,8 @@ Manage LogicMonitor device datasources
     </td>
     <td>
       <ul>
-        <li>The action you wish to perform on the datasource.</li>
-        <li><b>SDT:</b> Schedule downtime for a device datasource in your LogicMonitor account.</li>
+        <li>The action you wish to perform on the website check (ping or web check).</li>
+        <li><b>SDT:</b> Schedule downtime for a website check in your LogicMonitor account.</li>
       </ul>
     </td>
   </tr>
@@ -100,7 +100,7 @@ Manage LogicMonitor device datasources
   </tr>
   <tr>
     <td colspan="1">
-      <b>id</b>
+      <b>website_check_id</b>
       <div>
         <span>integer</span>
       </div>
@@ -108,14 +108,14 @@ Manage LogicMonitor device datasources
     <td></td>
     <td>
       <ul>
-        <li>The ID of the device datasource.</li>
-        <li>Required for action=sdt if name isn't provided.</li>
+        <li>ID of the website check (ping or web check) to target.</li>
+        <li>Required for action=sdt if website check name isn't provided.</li>
       </ul>
     </td>
   </tr>
   <tr>
     <td colspan="1">
-      <b>name</b>
+      <b>website_check_name</b>
       <div>
         <span>string</span>
       </div>
@@ -123,14 +123,14 @@ Manage LogicMonitor device datasources
     <td></td>
     <td>
       <ul>
-        <li>Name of the device datasource to target.</li>
-        <li>Required for action=sdt if id isn't provided.</li>
+        <li>Name of the website check (ping or web check) to target.</li>
+        <li>Required for action=sdt if website check id isn't provided.</li>
       </ul>
     </td>
   </tr>
   <tr>
     <td colspan="1">
-      <b>device_id</b>
+      <b>checkpoint_id</b>
       <div>
         <span>integer</span>
       </div>
@@ -138,20 +138,15 @@ Manage LogicMonitor device datasources
     <td></td>
     <td>
       <ul>
-        <li>ID of device (containing datasource) to target.</li>
-        <li>
-          Required for action=sdt if the following are true:<br>
-            (1) id of datasource isn't provided<br>
-            (2) name of datasource is provided<br>
-            (3) device_display_name isn't provided<br>
-            (4) device_hostname isn't provided
-        </li>
+        <li>ID of the checkpoint location you want to put in SDT.</li>
+        <li>Required for action=sdt if you want to apply SDT at specific location and checkpoint name isn't provided.</li>
+        <li>If no checkpoint (id or name) is provided it will put the whole website check in SDT.</li>
       </ul>
     </td>
   </tr>
-    <tr>
+  <tr>
     <td colspan="1">
-      <b>device_display_name</b>
+      <b>checkpoint_name</b>
       <div>
         <span>string</span>
       </div>
@@ -159,35 +154,9 @@ Manage LogicMonitor device datasources
     <td></td>
     <td>
       <ul>
-        <li>The display name of device (containing datasource) to target.</li>
-        <li>
-          Required for action=sdt if the following are true:<br>
-            (1) id of datasource isn't provided<br>
-            (2) name of datasource is provided<br>
-            (3) device_id isn't provided<br>
-            (4) device_hostname isn't provided
-        </li>
-      </ul>
-    </td>
-  </tr>
-    <tr>
-    <td colspan="1">
-      <b>device_hostname</b>
-      <div>
-        <span>string</span>
-      </div>
-    </td>
-    <td></td>
-    <td>
-      <ul>
-        <li>The hostname (name) of device (containing datasource) to target.</li>
-        <li>
-          Required for action=sdt if the following are true:<br>
-            (1) id of datasource isn't provided<br>
-            (2) name of datasource is provided<br>
-            (3) device_id isn't provided<br>
-            (4) device_display_name isn't provided
-        </li>
+        <li>Name of the checkpoint location you want to put in SDT.</li>
+        <li>Required for action=sdt if you want to apply SDT at specific location and checkpoint id isn't provided.</li>
+        <li>If no checkpoint (id or name) is provided it will put the whole website check in SDT.</li>
       </ul>
     </td>
   </tr>
@@ -198,7 +167,7 @@ Manage LogicMonitor device datasources
         <span>string</span>
       </div>
     </td>
-    <td>
+     <td>
       <b>Default:</b>
       <ul>
         <li>the time action was executed</li>
@@ -276,19 +245,36 @@ Manage LogicMonitor device datasources
 
 ```yaml
 ---
-- name: SDT Datasource
+- name: SDT website check
   hosts: localhost
   tasks:
-    - name: Place LogicMonitor datasource into Scheduled downtime.
+    - name: Place LogicMonitor website check (ping or web check) into Scheduled downtime.
       logicmonitor:
         action: sdt
         company: batman
         access_id: "id123"
         access_key: "key123"
-        name: "ping"
-        device_display_name: "127.0.0.1_collector_1"
-        start_time: "1/1/2022 15:00"
+        website_check_id: 1
+        start_time: "1/10/2022 15:00"
         duration: 60
+
+---
+- name: SDT Website check by locations
+  hosts: localhost
+  tasks:
+    - name: Place LogicMonitor website check (ping or web check) into Scheduled downtime.
+      logicmonitor:
+        action: sdt
+        company: batman
+        access_id: "id123"
+        access_key: "key123"
+        website_check_id: 1
+        start_time: "1/10/2022 15:00"
+        duration: 60
+        checkpoint_name: "{{item}}"
+      loop:
+        - Europe - Dublin
+        - Asia - Singapore
 ```
 
 <a name="return-values"></a>

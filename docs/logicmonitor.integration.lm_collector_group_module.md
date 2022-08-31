@@ -260,6 +260,35 @@ Manage LogicMonitor collector groups
       </ul>
     </td>
   </tr>
+<tr>
+    <td colspan="1">
+      <b>optype</b>
+      <div>
+        <span>string</span>
+      </div>
+    </td>
+    <td>
+      <b>Choices:</b>
+      <ul>
+        <li>refresh</li>
+        <li>replace</li>
+        <li>add</li>
+      </ul>
+      <b>Default:</b>
+      <ul>
+        <li>replace</li>
+      </ul>
+    </td>
+    <td>
+      <ul>
+        <li>A string describing the operation on properties when updating collector group </li>
+        <li><b>replace</b> - a property would be updated if it exists already else a new property will be created</li>
+        <li><b>refresh</b> - a property would be updated if it exists already else a new property will be created,<br> any existing property not provided during update will be removed</li>
+        <li><b>add</b> - a property would be ignored if it exists already else a new property will be created</li>
+        <li>Optional for managing collector groups (action=update).</li>
+      </ul>
+    </td>
+  </tr>
 </table>
 
 <a name="examples"></a>
@@ -300,6 +329,7 @@ Manage LogicMonitor collector groups
         properties: {
           type2: dev2
         }
+        optype: add
 
 ---
 - name: Remove Collector Group

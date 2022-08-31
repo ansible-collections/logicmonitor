@@ -314,13 +314,20 @@ Manage LogicMonitor devices
         <span>string</span>
       </div>
     </td>
-    <td></td>
+    <td>
+      <b>Default:</b>
+      <ul>
+        <li>the time action was executed</li>
+      </ul>
+    </td>
     <td>
       <ul>
         <li>The time that the Scheduled Down Time (SDT) should begin.</li>
         <li>Format must be "yyyy-MM-dd HH:mm" or "yyyy-MM-dd HH:mm z" where z is "am" or "pm". 
               The former is used for 24-hr clock while the latter is a 12-hr clock.</li>
         <li>Optional for action=sdt.</li>
+        <li>Defaults to the time action is executed.</li>
+        <li>Required in case start time differ from the execution time of action.</li>
       </ul>
     </td>
   </tr>
@@ -337,6 +344,7 @@ Manage LogicMonitor devices
         <li>The time that the Scheduled Down Time (SDT) should end.</li>
         <li>Format must be "yyyy-MM-dd HH:mm" or "yyyy-MM-dd HH:mm z" where z is "am" or "pm". 
               The former is used for a 24-hr clock while the latter is for a 12-hr clock.</li>
+        <li>If end time is provided it will be used otherwise duration would be used (duration defaults to 30 min)</li>
         <li>Optional for action=sdt.</li>
       </ul>
     </td>
@@ -357,8 +365,6 @@ Manage LogicMonitor devices
     <td>
       <ul>
         <li>The duration (minutes) of the Scheduled Down Time (SDT).</li>
-        <li>Format must be "yyyy-MM-dd HH:mm" or "yyyy-MM-dd HH:mm z" where z is "am" or "pm". 
-              The former is used for a 24-hr clock while the latter is for a 12-hr clock.</li>
         <li>Optional for action=sdt.</li>
       </ul>
     </td>
@@ -400,6 +406,35 @@ Manage LogicMonitor devices
       <ul>
         <li>A boolean flag to enable/disable the feature to <br>(1) update a device when the initial action=add because the device exists <br>or<br> (2) add a device when the initial action=update because the device doesn't exist</li>
         <li>Optional for managing devices (action=add or action=update).</li>
+      </ul>
+    </td>
+  </tr>
+  <tr>
+    <td colspan="1">
+      <b>optype</b>
+      <div>
+        <span>string</span>
+      </div>
+    </td>
+    <td>
+      <b>Choices:</b>
+      <ul>
+        <li>refresh</li>
+        <li>replace</li>
+        <li>add</li>
+      </ul>
+      <b>Default:</b>
+      <ul>
+        <li>replace</li>
+      </ul>
+    </td>
+    <td>
+      <ul>
+        <li>A string describing the operation on properties when updating device </li>
+        <li><b>replace</b> - a property would be updated if it exists already else a new property will be created</li>
+        <li><b>refresh</b> - a property would be updated if it exists already else a new property will be created,<br> any existing property not provided during update will be removed</li>
+        <li><b>add</b> - a property would be ignored if it exists already else a new property will be created</li>
+        <li>Optional for managing device (action=update).</li>
       </ul>
     </td>
   </tr>
@@ -452,6 +487,7 @@ Manage LogicMonitor devices
           snmp.community: commstring,
           type: dev
         }
+        optype: add
 
 ---
 - name: Remove Device
@@ -469,7 +505,7 @@ Manage LogicMonitor devices
 - name: SDT Device
   hosts: localhost
   tasks:
-    - name: Place LogicMonitor device into Scheduled downtime (default is 30 min.)
+    - name: Place LogicMonitor device into Scheduled downtime.
       logicmonitor:
         action: sdt
         company: batman
