@@ -1,4 +1,4 @@
-# logicmonitor.integration.lm_collector
+# logicmonitor.integration.lm_otel_collector
 
 Manage LogicMonitor collectors
 
@@ -168,7 +168,7 @@ Manage LogicMonitor collectors
   become: yes
   tasks:
     - name: Add LogicMonitor collector
-      lm_collector:
+      lm_otel_collector:
         action: add
         company: batman
         access_id: "id123"
@@ -182,7 +182,7 @@ Manage LogicMonitor collectors
   become: yes
   tasks:
     - name: Remove LogicMonitor collector
-      lm_collector:
+      lm_otel_collector:
         action: remove
         company: batman
         access_id: "id123"
