@@ -12,7 +12,7 @@ Manage LogicMonitor alert rules
 
 ## Synopsis
 
-- This module can be used to manage LogicMonitor alert rule (i.e. add, update, remove, SDT).
+- This module can be used to manage LogicMonitor alert rule (i.e. add, update, remove).
 
 <a name="requirements"></a>
 

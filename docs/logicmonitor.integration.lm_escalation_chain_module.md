@@ -12,7 +12,7 @@ Manage LogicMonitor escalation chain
 
 ## Synopsis
 
-- This module can be used to manage LogicMonitor escalation chain (i.e. add, update, remove, SDT).
+- This module can be used to manage LogicMonitor escalation chain (i.e. add, update, remove).
 
 <a name="requirements"></a>
 

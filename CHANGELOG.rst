@@ -4,6 +4,21 @@ LogicMonitor Ansible Collection Release Notes
 
 .. contents:: Topics
 
+v1.2.1
+======
+
+Feature Enhancement
+-------------------
+
+- lm_device: Return value now contains ``data`` (resource information), ``action_performed``, ``addition_info``.
+- lm_collector: Return value now contains ``data`` (resource information), ``action_performed``, ``addition_info``.
+- lm_device_group: Return value now contains ``data`` (resource information), ``action_performed``, ``addition_info``
+- lm_collector_group: Return value now contains ``data`` (resource information), ``action_performed``, ``addition_info``
+- lm_datasource: Return value now contains ``data`` (resource information), ``action_performed``, ``addition_info``
+- lm_alert_rule: Return value now contains ``data`` (resource information), ``action_performed``, ``addition_info``
+- lm_escalation_chain: Return value now contains ``data`` (resource information), ``action_performed``, ``addition_info``
+- lm_website_check: Return value now contains ``data`` (resource information), ``action_performed``, ``addition_info``
+
 v1.2.0
 ======
 
