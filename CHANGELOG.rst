@@ -4,6 +4,15 @@ LogicMonitor Ansible Collection Release Notes
 
 .. contents:: Topics
 
+v1.3.0
+======
+
+Licence Update
+--------------
+
+- Changed license to BSD (3-clause) from GPL-V3
+- Added copyright information
+
 v1.2.1
 ======
 
