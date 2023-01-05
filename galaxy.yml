@@ -1,0 +1,15 @@
+namespace: logicmonitor
+name: integration
+version: 1.3.0
+readme: README.md
+authors:
+  - Ansible (github.com/ansible)
+description: Collection for LogicMonitor Ansible integration
+license_file: LICENSE
+tags:
+  - logicmonitor
+  - lm
+  - monitoring
+  - integration
+repository: "https://github.com/ansible-collections/logicmonitor"
+homepage: https://logicmonitor.com
