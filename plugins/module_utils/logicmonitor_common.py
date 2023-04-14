@@ -214,6 +214,7 @@ class LogicMonitorBaseModule(object):
                 "Authorization": lmv1_token,
                 "X-Version": "3",
                 "Content-Type": "application/json"
+                "User-Agent": "LogicMonitorAnsibleIntegration/1.3.0"
             }
 
             if collecter_type == "lmotel":
