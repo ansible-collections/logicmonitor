@@ -213,7 +213,7 @@ class LogicMonitorBaseModule(object):
             headers = {
                 "Authorization": lmv1_token,
                 "X-Version": "3",
-                "Content-Type": "application/json"
+                "Content-Type": "application/json",
                 "User-Agent": "LogicMonitorAnsibleIntegration/1.3.0"
             }
 
