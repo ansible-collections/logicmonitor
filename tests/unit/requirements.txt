@@ -1,0 +1,8 @@
+pytest-asyncio
+asyncio
+aiohttp
+pytest-xdist
+# asyncmock
+# dpath
+pytest-forked
+pytest-mock
