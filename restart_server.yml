@@ -1,0 +1,35 @@
+---
+- name: restart server
+  gather_facts: false
+  hosts: localhost
+  vars:
+    device: "{{ansible_eda.event.payload.host}}"
+  tasks:
+    - ansible.builtin.shell: lsof -i
+      delegate_to: "{{device}}"
+      register: lsof_output
+    - ansible.builtin.shell: top -bo +%MEM -n1 | head -n20
+      delegate_to: "{{device}}"
+      register: top_output
+    - ansible.builtin.shell: top -bo +%CPU -n1 | head -n20
+      delegate_to: "{{device}}"
+      register: top_cpu
+    - name: List all network connections listening
+      debug:
+        msg: '{{lsof_output.stdout_lines}}'
+    - name: List of top memory consuming programs
+      debug:
+        msg: '{{top_output.stdout_lines}}'
+    - name: List of top cpu consuming programs
+      debug:
+        msg: '{{top_cpu.stdout_lines}}'
+    - ansible.builtin.reboot:
+        msg: "reboot by Ansible"
+        pre_reboot_delay: 5
+        post_reboot_delay: 10
+        test_command: "whoami"
+      delegate_to: "{{device}}"
+      register: restart_output
+    - name: restart output
+      debug:
+        msg: '{{restart_output}}'

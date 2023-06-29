@@ -1,0 +1,16 @@
+all:
+  hosts:
+    collector_2:
+      ansible_host: 192.168.147.145
+      ansible_user: root
+    webserver_1:
+      ansible_host: 192.168.147.192
+      ansible_user: root
+    server_1:
+      ansible_host: 192.168.147.215
+      ansible_user: root
+    ngnix-server:
+      ansible_host: 192.168.147.212
+      ansible_user: root
+    localhost:
+      ansible_connection: local

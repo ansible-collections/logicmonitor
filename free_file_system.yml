@@ -1,0 +1,42 @@
+---
+- name: restart server
+  gather_facts: false
+  hosts: localhost
+  vars:
+    device: "{{ansible_eda.event.payload.host}}"
+  tasks:
+    - name: List of openfile in directory
+      ansible.builtin.shell: lsof /dev/shm
+      delegate_to: "{{device}}"
+      register: lsof
+    - name: List open files in /dev/shm
+      debug:
+        msg: '{{top_cpu.stdout_lines}}'
+    - name: Kill process righting to directory
+      ansible.builtin.shell: kill -9 `lsof -t /dev/shm`
+      delegate_to: "{{device}}"
+    - ansible.builtin.shell: lsof /dev/shm
+      delegate_to: "{{device}}"
+      register: lsof
+    - name: List open files in directory
+      debug:
+        msg: '{{lsof.stdout_lines}}'
+#
+#    - name: List of files in directory
+#      ansible.builtin.shell: ls -la /dev/shm
+#      delegate_to: "{{device}}"
+#      register: ls
+#    - name: List open files in /dev/shm
+#      debug:
+#        msg: '{{ls.stdout_lines}}'
+#    - name: Clear all files in directory
+#      ansible.builtin.shell: rm -rf /dev/shm`
+#      delegate_to: "{{device}}"
+#    - name: List of files in directory after cleaning
+#      ansible.builtin.shell: ls -la /dev/shm
+#      delegate_to: "{{device}}"
+#      register: ls
+#    - name: List open files in /dev/shm
+#      debug:
+#        msg: '{{ls.stdout_lines}}'
+#

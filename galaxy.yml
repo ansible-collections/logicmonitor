@@ -1,6 +1,6 @@
 namespace: logicmonitor
 name: integration
-version: 1.3.0
+version: 2.0.0
 readme: README.md
 authors:
   - Ansible (github.com/ansible)
@@ -13,3 +13,8 @@ tags:
   - integration
 repository: "https://github.com/ansible-collections/logicmonitor"
 homepage: https://logicmonitor.com
+build_ignore:
+  - .github/
+  - .venv
+  - venv
+  - playbooks/

@@ -1,0 +1,20 @@
+---
+- name: start app
+  gather_facts: false
+  hosts: localhost
+  vars:
+    device: "{{ansible_eda.event.payload.host}}"
+  tasks:
+    - ansible.builtin.systemd:
+        state: stopped
+        name: logicmonitor-agent
+      delegate_to: "{{device}}"
+      register: output
+    - ansible.builtin.systemd:
+        state: stopped
+        name: logicmonitor-watchdog
+      delegate_to: "{{device}}"
+      register: output
+    - name: output tasks
+      debug:
+        msg: '{{output}}'

@@ -1,0 +1,30 @@
+---
+- name: restart server
+  gather_facts: false
+  hosts: localhost
+  vars:
+    device: "{{ansible_eda.event.payload.host}}"
+  tasks:
+    - ansible.builtin.shell: top -bo +%CPU -n1 | head -n20
+      delegate_to: "{{device}}"
+      register: top_cpu
+    - name: List of top cpu consuming programs
+      debug:
+        msg: '{{top_cpu.stdout_lines}}'
+    - name: Restarting the device
+      ansible.builtin.reboot:
+        msg: "reboot by Ansible"
+        pre_reboot_delay: 5
+        post_reboot_delay: 10
+        test_command: "whoami"
+      delegate_to: "{{device}}"
+      register: restart_output
+    - name: restart output
+      debug:
+        msg: '{{restart_output}}'
+    - ansible.builtin.shell: top -bo +%CPU -n1 | head -n20
+      delegate_to: "{{device}}"
+      register: top_cpu
+    - name: List of top cpu consuming programs after restart
+      debug:
+        msg: '{{top_cpu.stdout_lines}}'

@@ -1,0 +1,11 @@
+plugins/modules/lm_info.py validate-modules:missing-gplv3-license
+plugins/modules/lm_collector.py validate-modules:missing-gplv3-license
+plugins/modules/lm_collector_group.py validate-modules:missing-gplv3-license
+plugins/modules/lm_device.py validate-modules:missing-gplv3-license
+plugins/modules/lm_device_group.py validate-modules:missing-gplv3-license
+plugins/modules/lm_datasource.py validate-modules:missing-gplv3-license
+plugins/modules/lm_alert_rule.py validate-modules:missing-gplv3-license
+plugins/modules/lm_escalation_chain.py validate-modules:missing-gplv3-license
+plugins/modules/lm_website_check.py validate-modules:missing-gplv3-license
+plugins/modules/lm_otel_collector.py validate-modules:missing-gplv3-license
+plugins/modules/lm_otel_collector.py validate-modules:use-run-command-not-popen

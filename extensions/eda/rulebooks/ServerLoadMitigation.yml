@@ -1,0 +1,25 @@
+---
+- name: webhook alert Events
+  hosts: localhost
+  sources:
+    - logicmonitor.integration.webhook:
+        hosts: 127.0.0.1
+        port: 5000
+        vault_pass: '{{vault_pass}}'
+        vault_path: '{{vault_path}}'
+  rules:
+    - name: High memory usages
+      condition: event.payload.type == "alert" and event.payload.datasource == "Memory Usage" and event.payload.datapoint == "ActiveMemoryPercent"
+      action:
+        run_playbook:
+          name: logicmonitor.integration.restart_server
+    - name: High cpu utilisation
+      condition: event.payload.type == "alert" and event.payload.datapoint == "CPUBusyPercent"
+      action:
+        run_playbook:
+          name: logicmonitor.integration.restart_server_log_cpu_usages
+    - name: High disk space utilisation "for /dev/shm"
+      condition: event.payload.type == "alert" and event.payload.datapoint == "PercentUsed" and event.payload.datasource == "Filesystem Usage-/dev/shm"
+      action:
+        run_playbook:
+          name: logicmonitor.integration.free_file_system

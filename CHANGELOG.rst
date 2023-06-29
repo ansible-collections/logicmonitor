@@ -4,6 +4,14 @@ LogicMonitor Ansible Collection Release Notes
 
 .. contents:: Topics
 
+v2.0.0
+======
+
+New Event Source
+----------------
+
+- webhook: Gets alert events from logicmonitor ansible integration.
+
 v1.3.0
 ======
 

@@ -1,2 +1,9 @@
 tests/.DS_Store
 .DS_Store
+/tests/output/
+.pytest_cache/
+/.python-version
+venv
+*.tar.gz
+.idea/
+/.github/
