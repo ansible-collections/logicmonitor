@@ -40,6 +40,9 @@ collections:
 This collection depends upon following third party libraries:
 
 * [`requests`](https://github.com/psf/requests) **>= 2.24.0**
+* `aiohttp`
+* `asyncio`
+* `PyYAML`
 
 This python module dependencies are not installed by `ansible-galaxy`. It can be manually installed using pip:
 
@@ -90,6 +93,35 @@ Or you can add the full namespace and collection name in the `collections` eleme
         description: localhost
 ```
 
+### Rulebook
+
+To use a event source from the LogicMonitor collection, please reference the full namespace, collection name, and event source name
+that you want to use:
+
+```yaml
+---
+- name: webhook alert Events
+  hosts: localhost
+  sources:
+    - logicmonitor.integration.webhook:
+        hosts: 127.0.0.1
+        port: 5000
+        vault_pass: '{{vault_pass}}'
+        vault_path: '{{vault_path}}'
+  rules:
+    - name: start collector
+      condition: event.payload.type == "agentDownAlert"
+      action:
+        run_playbook:
+          name: logicmonitor.integration.start_lm-collector
+    - name: ensure webserver is running
+      condition: event.payload.type == "serviceAlert"
+      action:
+        run_playbook:
+          name: logicmonitor.integration.start_webserver
+```
+
+
 ## Included content
 
 ### Modules
@@ -107,6 +139,12 @@ Name | Description
 [logicmonitor.integration.lm_datasource](https://github.com/ansible-collections/logicmonitor/blob/main/docs/logicmonitor.integration.lm_datasource_module.md)|Manage LogicMonitor device datasources (i.e. sdt)
 [logicmonitor.integration.lm_website_check](https://github.com/ansible-collections/logicmonitor/blob/main/docs/logicmonitor.integration.lm_website_check_module.md)|Manage LogicMonitor website checks (i.e. sdt a ping or web check)
 
+### EventSources
+Name | Description
+--- | ---
+[logicmonitor.integration.webhook](https://github.com/ansible-collections/logicmonitor/blob/main/docs/logicmonitor.integration.webhook_event_source.md)|Recieve alerts/events from logicmonitor)
+
+
 ## Contributing
 
 You can participate in this project
@@ -123,6 +161,9 @@ See the [changelog](https://github.com/ansible-collections/logicmonitor/blob/mai
 - [Ansible User Guide](https://docs.ansible.com/ansible/latest/user_guide/index.html)
 - [Ansible Using Collections](https://docs.ansible.com/ansible/latest/user_guide/collections_using.html)
 - [Ansible Community Code of Conduct](https://docs.ansible.com/ansible/latest/community/code_of_conduct.html)
+- [Ansible Community Code of Conduct](https://docs.ansible.com/ansible/latest/community/code_of_conduct.html)
+- [Ansible Rulebook Introduction](https://ansible.readthedocs.io/projects/rulebook/en/latest/getting_started.html)
+- [Event Driven Ansible Introduction](https://www.ansible.com/blog/getting-started-with-event-driven-ansible)
 
 ## Licensing
 

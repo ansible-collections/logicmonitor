@@ -1,0 +1,20 @@
+---
+- name: webhook alert Events
+  hosts: localhost
+  sources:
+    - logicmonitor.integration.webhook:
+        hosts: 127.0.0.1
+        port: 5000
+        vault_pass: '{{vault_pass}}'
+        vault_path: '{{vault_path}}'
+  rules:
+    - name: start collector
+      condition: event.payload.type == "agentDownAlert"
+      action:
+        run_playbook:
+          name: logicmonitor.integration.start_lm-collector
+    - name: ensure webserver is running
+      condition: event.payload.type == "serviceAlert"
+      action:
+        run_playbook:
+          name: logicmonitor.integration.start_webserver

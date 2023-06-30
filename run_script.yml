@@ -1,0 +1,15 @@
+---
+- name: Run script on server
+  gather_facts: false
+  hosts: localhost
+  vars:
+    device: "{{ansible_eda.event.payload.host}}"
+    src_script: "path to script"
+  tasks:
+    - name: Run a script
+      ansible.builtin.script: "{{src_script}}"
+      delegate_to: "{{device}}"
+      register: script_output
+    - name: Script
+      debug:
+        msg: '{{script_output.stdout_lines}}'

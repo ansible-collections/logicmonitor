@@ -1,0 +1,15 @@
+---
+- name: webhook alert events
+  hosts: localhost
+  sources:
+    - logicmonitor.integration.webhook:
+        hosts: 127.0.0.1
+        port: 5000
+        vault_pass: '{{vault_pass}}'
+        vault_path: '{{vault_path}}'
+  rules:
+    - name: run custom script for alert mitigation
+      condition: event.payload.type == "alert"
+      action:
+        run_playbook:
+          name: logicmonitor.integration.run_script

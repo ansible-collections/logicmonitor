@@ -1,0 +1,21 @@
+---
+- name: start app
+  gather_facts: false
+  hosts: localhost
+  vars:
+    device: "{{ansible_eda.event.payload.host}}"
+  tasks:
+    - ansible.builtin.systemd:
+        state: stopped
+        name: nginx
+      delegate_to: "{{device}}"
+      register: output
+#    - name: output nginx started
+#      debug:
+#        msg: '{{output}}'
+#    - ansible.builtin.shell: cat /etc/nginx/nginx.conf
+#      delegate_to: "{{device}}"
+#      register: server_configuration
+#    - name: output server configuration
+#      debug:
+#        msg: '{{server_configuration.stdout_lines}}'
