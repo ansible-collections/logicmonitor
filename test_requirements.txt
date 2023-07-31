@@ -1,0 +1,9 @@
+tox
+ruff
+darglint
+pylint
+pytest>=7,<8
+requests>=2.24.0
+aiohttp
+asyncio
+PyYAML

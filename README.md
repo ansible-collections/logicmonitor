@@ -142,7 +142,7 @@ Name | Description
 ### EventSources
 Name | Description
 --- | ---
-[logicmonitor.integration.webhook](https://github.com/ansible-collections/logicmonitor/blob/main/docs/logicmonitor.integration.webhook_event_source.md)|Recieve alerts/events from logicmonitor)
+[logicmonitor.integration.webhook](https://github.com/ansible-collections/logicmonitor/blob/main/docs/logicmonitor.integration.webhook_event_source.md)|Recieve alerts/events from logicmonitor
 
 
 ## Contributing

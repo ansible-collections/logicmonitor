@@ -1,9 +1,9 @@
-"""
-webhook.py
+"""webhook.py.
 
 An ansible-rulebook event source module for receiving logicmonitor alerts via a webhook.
 
 Arguments:
+---------
     host: The hostname to listen to. Set to 0.0.0.0 to listen on all
           interfaces. Defaults to 127.0.0.1
     port: The TCP port to listen to.  Defaults to 5000
@@ -25,34 +25,52 @@ Usage in a rulebook:
       action:
         run_playbook:
           name: logicmonitor.integration.start_lm-collector
+
 """
 
 import asyncio
-import sys
-import yaml
 import logging
+import sys
+from pathlib import Path
+from typing import Any
 
+import yaml
+from aiohttp import web
 from ansible.constants import DEFAULT_VAULT_ID_MATCH
 from ansible.parsing.vault import VaultLib, VaultSecret
-from typing import Any, Dict
-from aiohttp import web
+
+MISSING_VAULT_ARGUMENT_PATH = "Missing required argument: vault_path"
+
+MISSING_VAULT_ARGUMENT_PASS = "Missing required argument: vault_pass"  # noqa: S105
 
 routes = web.RouteTableDef()
 
-ANSIBLE_TOKEN = "ansible_token"
-_token = None
+ANSIBLE_KEY = "ansible_token"
 
 logger = logging.getLogger("logicmonitor.integration.webhook")
 
 
 @routes.post(r"/{endpoint:.*}")
-async def webhook(request: web.Request):
+async def webhook(request: web.Request) -> web.Response:
+    """Webhook endpoint route.
+
+    Parameters
+    ----------
+    request : web.Request
+        incoming web request
+
+    Returns
+    -------
+    web.Request
+        contains status code and message
+
+    """
     payload = await request.json()
     endpoint = request.match_info["endpoint"]
 
-    headers = dict(map(lambda kv: (kv[0].lower(), kv[1]), request.headers.items()))
+    headers = {k.lower(): v for (k, v) in request.headers.items()}
 
-    header_token = headers.pop(ANSIBLE_TOKEN, None)
+    header_token = headers.pop(ANSIBLE_KEY, None)
     if not header_token:
         logger.warning("Ansible token not provided")
         return web.Response(status=403, text="Unauthorized! Token not provided")
@@ -61,62 +79,84 @@ async def webhook(request: web.Request):
         "meta": {"endpoint": endpoint, "headers": headers},
     }
 
-    if header_token == _token:
+    if header_token == request.app["token"]:
         auth_message = "Request authenticated! Alert: type=%s, status=%s, host=%s"
-        logger.info(auth_message, payload.get("type"), payload.get("status"), payload.get("host"))
+        logger.info(auth_message, payload.get("type"),
+                    payload.get("status"), payload.get("host"))
         await request.app["queue"].put(data)  # adding data to queue
         return web.Response(text="success")
-    logger.warning("Unauthorised Request! wrong %s provided.", ANSIBLE_TOKEN)
+    logger.warning("Unauthorised Request! wrong %s provided.", ANSIBLE_KEY)
     return web.Response(status=403, text="Unauthorized! Wrong token provided")
 
 
-async def main(queue: asyncio.Queue, args: Dict[str, Any]):
+async def main(queue: asyncio.Queue, args: dict[str, Any]) -> None:
+    """Initialise the event source.
+
+    Parameters
+    ----------
+    queue : asyncio.Queue
+        event queue
+    args : dict
+        dictionary object containing arguments from rulebook
+
+    Raises
+    ------
+    Exception
+        If not able to read vault content
+    FileNotFoundError
+        If the vault file is missing
+    ValueError
+        If vault_path or vault_pass are missing
+    """
     logger.info("Starting webhook")
 
     vault_path = args.get("vault_path")
     vault_pass = args.get("vault_pass")
     if not vault_pass:
         logger.error("vault_pass is required")
-        raise ValueError("Missing required argument: vault_pass")
+        raise ValueError(MISSING_VAULT_ARGUMENT_PASS)
     if not vault_path:
         logger.error("vault_path is required")
-        raise ValueError("Missing required argument: vault_path")
+        raise ValueError(MISSING_VAULT_ARGUMENT_PATH)
 
     try:
         # init vaultlib
         logger.info("Reading vault content")
         vault = VaultLib([(DEFAULT_VAULT_ID_MATCH, VaultSecret(vault_pass.encode()))])
-        vault_dict = yaml.safe_load(vault.decrypt(open(vault_path).read()))
+        path = Path(vault_path)
+        with path.open(encoding="utf-8") as vault_file:
+            vault_dict = yaml.safe_load(vault.decrypt(vault_file.read()))
         logger.info("Successfully read vault content")
     except FileNotFoundError:
-        logger.error("File %s doesn't exist!!!", vault_path)
+        logger.exception("File %s doesn't exist!!!", vault_path)
         raise
     except Exception:
-        logger.exception("Error decrypting and reading vault content. Please check vault password and vault content.")
+        logger.exception("Error decrypting and reading vault content. "
+                         "Please check vault password and vault content.")
         raise
 
-    global _token
-    _token = vault_dict.get(ANSIBLE_TOKEN)
-    if not _token:
-        logger.error("Vault doesn't have the required variable: %s", ANSIBLE_TOKEN)
-        raise ValueError("Vault doesn't have the required variable: " + ANSIBLE_TOKEN)
+    token = vault_dict.get(ANSIBLE_KEY)
+    if not token:
+        logger.error("Vault doesn't have the required variable: %s", ANSIBLE_KEY)
+        raise ValueError("Vault doesn't have the required variable: " + ANSIBLE_KEY)
 
     app = web.Application()
     app["queue"] = queue
+    app["token"] = token
 
     app.add_routes(routes)
 
     runner = web.AppRunner(app)
     await runner.setup()
     site = web.TCPSite(
-        runner, args.get("host") or "localhost", args.get("port") or 5000
+        runner, args.get("host") or "localhost", args.get("port") or 5000,
     )
     await site.start()
 
     try:
         await asyncio.Future()
     except asyncio.CancelledError:
-        logger.error("Plugin Task Cancelled")
+        logger.exception("Plugin Task Cancelled")
     finally:
         await runner.cleanup()
 
@@ -124,10 +164,21 @@ async def main(queue: asyncio.Queue, args: Dict[str, Any]):
 if __name__ == "__main__":
     logging.basicConfig(stream=sys.stdout, level=logging.INFO)
 
-    class MockQueue:
-        async def put(self, event):
+    class MockQueue:  # pylint: disable=R0903
+        """A fake queue."""
+
+        async def put(self: "MockQueue", event: dict[str, Any]) -> None:
+            """Print the event.
+
+            Parameters
+            ----------
+            event : dict
+                event details
+
+            """
             logger.info(event)
 
-    args = {"host": "127.0.0.1", "port": 5000, "vault_pass": "secret", "vault_path": "path"}
+    params = {"host": "127.0.0.1", "port": 5000,
+              "vault_pass": "secret", "vault_path": "path"}
 
-    asyncio.run(main(MockQueue(), args))
+    asyncio.run(main(MockQueue(), params))
