@@ -6,4 +6,6 @@ tests/.DS_Store
 venv
 *.tar.gz
 .idea/
-/.github/
+#/.github/
+.ruff_cache/
+.tox/

@@ -4,6 +4,14 @@ LogicMonitor Ansible Collection Release Notes
 
 .. contents:: Topics
 
+v2.0.1
+======
+
+Improvements
+------------
+
+- Event source plugin now follows ansible eda testing template
+
 v2.0.0
 ======
 

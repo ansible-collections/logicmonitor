@@ -56,7 +56,7 @@ async def test_cancel(mocker):
     queue = asyncio.Queue()
 
     mock_vault_data = json.dumps({"ansible_token": "test"}).encode('utf-8')
-    mocker.patch("builtins.open", return_value=io.StringIO("mock stream"))
+    mocker.patch("pathlib.Path.open", return_value=io.StringIO("mock stream"))
     mocker.patch("ansible.parsing.vault.VaultLib.decrypt", return_value=mock_vault_data)
 
     args = {"host": "127.0.0.1", "port": 8002, "vault_pass": "secret", "vault_path": "mocked"}
@@ -71,7 +71,7 @@ async def test_cancel(mocker):
 async def test_file_not_found(mocker):
     queue = asyncio.Queue()
 
-    mocker.patch("builtins.open", side_effect=FileNotFoundError("mocked error"))
+    mocker.patch("pathlib.Path.open", side_effect=FileNotFoundError("mocked error"))
 
     args = {"host": "127.0.0.1", "port": 8003, "vault_pass": "ansible", "vault_path": "mocked"}
     plugin_task = asyncio.create_task(start_server(queue, args))
@@ -85,7 +85,7 @@ async def test_no_token_in_vault(mocker):
     queue = asyncio.Queue()
 
     mock_vault_data = json.dumps({"ansible_no_token": "test"}).encode('utf-8')
-    mocker.patch("builtins.open", return_value=io.StringIO("mock stream"))
+    mocker.patch("pathlib.Path.open", return_value=io.StringIO("mock stream"))
     mocker.patch("ansible.parsing.vault.VaultLib.decrypt", return_value=mock_vault_data)
 
     args = {"host": "127.0.0.1", "port": 8004, "vault_pass": "ansible", "vault_path": "mocked"}
@@ -100,7 +100,7 @@ async def test_post_endpoint_success(mocker):
     queue = asyncio.Queue()
 
     mock_vault_data = json.dumps({"ansible_token": "test"}).encode('utf-8')
-    mocker.patch("builtins.open", return_value=io.StringIO("mock stream"))
+    mocker.patch("pathlib.Path.open", return_value=io.StringIO("mock stream"))
     mocker.patch("ansible.parsing.vault.VaultLib.decrypt", return_value=mock_vault_data)
 
     args = {"host": "127.0.0.1", "port": 8005, "vault_pass": "ansible", "vault_path": "mocked"}
@@ -128,7 +128,7 @@ async def test_post_endpoint_wrong_token(mocker):
     queue = asyncio.Queue()
 
     mock_vault_data = json.dumps({"ansible_token": "test"}).encode('utf-8')
-    mocker.patch("builtins.open", return_value=io.StringIO("mock stream"))
+    mocker.patch("pathlib.Path.open", return_value=io.StringIO("mock stream"))
     mocker.patch("ansible.parsing.vault.VaultLib.decrypt", return_value=mock_vault_data)
 
     args = {"host": "127.0.0.1", "port": 8006, "vault_pass": "ansible", "vault_path": "mocked"}
