@@ -168,7 +168,7 @@ if __name__ == "__main__":
     class MockQueue:  # pylint: disable=R0903
         """A fake queue."""
 
-        async def put(self: "MockQueue", event: dict[str, Any]) -> None:
+        async def put(self: MockQueue, event: dict[str, Any]) -> None:
             """Print the event.
 
             Parameters
