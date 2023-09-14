@@ -27,6 +27,7 @@ Usage in a rulebook:
           name: logicmonitor.integration.start_lm-collector
 
 """
+from __future__ import annotations
 
 import asyncio
 import logging
