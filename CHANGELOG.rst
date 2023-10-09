@@ -4,6 +4,14 @@ LogicMonitor Ansible Collection Release Notes
 
 .. contents:: Topics
 
+v2.0.2
+======
+
+Improvements
+------------
+
+- Added extensions.yml file
+
 v2.0.1
 ======
 

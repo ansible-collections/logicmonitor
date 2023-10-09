@@ -1,6 +1,6 @@
 namespace: logicmonitor
 name: integration
-version: 2.0.1
+version: 2.0.2
 readme: README.md
 authors:
   - Ansible (github.com/ansible)
@@ -18,3 +18,4 @@ build_ignore:
   - .venv
   - venv
   - playbooks/
+  - test/
