@@ -11,7 +11,7 @@ and plugins for interacting with LogicMonitor.
 
 ## Requirements
 
-- Ansible version **>=2.10**
+- Ansible version **>=2.13.0**
 - Python **>= 2.7**
 - Python [``requests``](https://github.com/psf/requests) module **>=2.24.0**
 - An existing LogicMonitor account

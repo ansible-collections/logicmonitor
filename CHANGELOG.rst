@@ -4,6 +4,14 @@ LogicMonitor Ansible Collection Release Notes
 
 .. contents:: Topics
 
+v2.0.3
+======
+
+Improvements
+------------
+
+- Updated minimum supported ansible version
+
 v2.0.2
 ======
 
