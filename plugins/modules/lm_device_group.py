@@ -60,6 +60,29 @@ options:
             - Required for action=add.
             - Required for update, remove, sdt if id isn't provided.
         type: str
+    auto_balance:
+        description:
+            - A boolean flag to denote whether or not the collector group configured for the device should use
+              auto balancing.
+            - This value should only be True when the configured collector group is an Auto-Balanced Collector Group
+              (ABCG).
+            - Optional for managing devices (action=add or action=update).
+        type: bool
+        default: False
+        choices: [True, False]
+    collector_group_id:
+        description:
+            - ID of the collector group to configure for the device.
+            - Required for action=add if an ABCG is being configured (auto_balance=True)
+              and collector_group_name isn't provided.
+        type: int
+    collector_group_name:
+        description:
+            - Name of the collector group to configure for the device.
+            - Default/Ungrouped group name should be denoted by empty string "" or "@default".
+            - Required for action=add if an ABCG is being configured (auto_balance=True)
+              and collector_group_name isn't provided.
+        type: str
     collector_id:
         description:
             - ID of preferred collector to monitor newly added device group.
@@ -232,6 +255,8 @@ from ansible_collections.logicmonitor.integration.plugins.module_utils.logicmoni
 PARENT_ID = "parentId"
 DISABLE_ALERTING = "disableAlerting"
 DEFAULT_COLLECTOR_ID = "defaultCollectorId"
+DEFAULT_COLLECTOR_GROUP_ID = "defaultCollectorGroupId"
+DEFAULT_AUTOBALANCE_COLLECTOR_GROUP_ID = "defaultAutoBalancedCollectorGroupId"
 CUSTOM_PROPERTIES = "customProperties"
 
 DEVICE_GROUP_ID = "deviceGroupId"
@@ -263,6 +288,9 @@ class DeviceGroup(LogicMonitorBaseModule):
             access_key=dict(required=True, no_log=True),
             id=dict(required=False, type="int"),
             full_path=dict(required=False),
+            auto_balance=dict(required=False, type="bool", default=False),
+            collector_group_id=dict(required=False, type="int"),
+            collector_group_name=dict(required=False),
             collector_id=dict(required=False, type="int"),
             collector_description=dict(required=False),
             description=dict(required=False),
@@ -294,6 +322,9 @@ class DeviceGroup(LogicMonitorBaseModule):
         if self.full_path is not None:
             self.full_path = self.full_path.strip()
             self.device_group_utils.check_group_path(self.full_path)
+        self.auto_balance = self.params[self.ModuleFields.AUTO_BALANCE]
+        self.collector_group_id = self.params[self.ModuleFields.COLLECTOR_GROUP_ID]
+        self.collector_group_name = self.params[self.ModuleFields.COLLECTOR_GROUP_NAME]
         self.collector_id = self.params[self.ModuleFields.COLLECTOR_ID]
         self.collector_desc = self.params[self.ModuleFields.COLLECTOR_DESCRIPTION]
         self.description = self.params[self.ModuleFields.DESCRIPTION]
@@ -452,6 +483,10 @@ class DeviceGroup(LogicMonitorBaseModule):
         data = {}
         if self.valid_id(self.collector_id) or self.collector_desc is not None:
             data[DEFAULT_COLLECTOR_ID] = self.collector_utils.get_collector_id(self.collector_id, self.collector_desc)
+        if self.auto_balance and self.valid_id(self.collector_group_id):
+            data[DEFAULT_AUTOBALANCE_COLLECTOR_GROUP_ID] = self.collector_group_utils.get_collector_group_id(self.collector_group_id, self.collector_group_name)
+        if not self.auto_balance and self.valid_id(self.collector_group_id):
+            data[DEFAULT_COLLECTOR_GROUP_ID] = self.collector_group_utils.get_collector_group_id(self.collector_group_id, self.collector_group_name)
         if self.full_path and self.full_path != "/":
             parent_group, name = self.split_full_path()
             data[self.NAME] = name.strip()
