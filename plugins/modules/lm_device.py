@@ -270,6 +270,9 @@ DISABLE_ALERTING = "disableAlerting"
 CUSTOM_PROPERTIES = "customProperties"
 AUTO_BALANCE_COLLECTOR_GROUP_ID = "autoBalancedCollectorGroupId"
 
+ENABLE_LOG = "isPreferredLogCollectorConfigured"
+LOG_COLLECTOR_GROUP_ID = "logCollectorGroupId"
+LOG_COLLECTOR_ID = "logCollectorId"
 
 class Device(LogicMonitorBaseModule):
 
@@ -300,6 +303,9 @@ class Device(LogicMonitorBaseModule):
             collector_group_name=dict(required=False),
             collector_id=dict(required=False, type="int"),
             collector_description=dict(required=False),
+            enable_log=dict(required=False, type="bool", choices=[True, False]),
+            log_collector_group_id=dict(required=False, type="int"),
+            log_collector_id=dict(required=False, type="int"),
             groups=dict(required=False, type="list", elements="str"),
             description=dict(required=False),
             disable_alerting=dict(required=False, type="bool", choices=[True, False]),
@@ -331,6 +337,9 @@ class Device(LogicMonitorBaseModule):
         self.collector_group_name = self.params[self.ModuleFields.COLLECTOR_GROUP_NAME]
         self.collector_id = self.params[self.ModuleFields.COLLECTOR_ID]
         self.collector_desc = self.params[self.ModuleFields.COLLECTOR_DESCRIPTION]
+        self.enable_log = self.params[self.ModuleFields.ENABLE_LOG]
+        self.log_collector_group_id = self.params[self.ModuleFields.LOG_COLLECTOR_GROUP_ID]
+        self.log_collector_id = self.params[self.ModuleFields.LOG_COLLECTOR_ID]
         self.groups = self.process_groups(self.params[self.ModuleFields.GROUPS])
         self.description = self.params[self.ModuleFields.DESCRIPTION]
         self.disable_alerting = self.params[self.ModuleFields.DISABLE_ALERTING]
@@ -532,6 +541,12 @@ class Device(LogicMonitorBaseModule):
             data[DISABLE_ALERTING] = str(self.disable_alerting)
         if self.properties is not None:
             data[CUSTOM_PROPERTIES] = self.build_properties(self.properties)
+        if self.enable_log is False:
+            data[ENABLE_LOG] = self.enable_log
+        if self.enable_log is True:
+            data[ENABLE_LOG] = self.enable_log
+            data[LOG_COLLECTOR_GROUP_ID] = self.log_collector_group_id
+            data[LOG_COLLECTOR_ID] = self.log_collector_id
         return data
 
     def build_collector_data(self, data):

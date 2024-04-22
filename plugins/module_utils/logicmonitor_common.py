@@ -422,6 +422,10 @@ class LogicMonitorBaseModule(object):
         VERSION = "version"
         SIZE = "size"
 
+        ENABLE_LOG = "enable_log"
+        LOG_COLLECTOR_GROUP_ID = "log_collector_group_id"
+        LOG_COLLECTOR_ID = "log_collector_id"
+
         DISPLAY_NAME = "display_name"
         HOSTNAME = "hostname"
         COLLECTOR_ID = "collector_id"
