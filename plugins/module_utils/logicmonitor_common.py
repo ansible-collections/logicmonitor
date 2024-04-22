@@ -422,6 +422,10 @@ class LogicMonitorBaseModule(object):
         VERSION = "version"
         SIZE = "size"
 
+        ENABLE_NETFLOW = "enable_netflow"
+        NETFLOW_COLLECTOR_GROUP_ID = "netflow_collector_group_id"
+        NETFLOW_COLLECTOR_ID = "netflow_collector_id"
+
         DISPLAY_NAME = "display_name"
         HOSTNAME = "hostname"
         COLLECTOR_ID = "collector_id"
