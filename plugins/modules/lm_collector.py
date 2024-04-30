@@ -114,6 +114,8 @@ options:
             - small = 2GB
             - medium = 4GB
             - large = 8GB
+            - extra_large = 16GB
+            - double_extra_large = 32GB
             - Optional for action=add
         type: str
         default: 'small'
@@ -319,7 +321,9 @@ class Collector(LogicMonitorBaseModule):
             "nano",
             "small",
             "medium",
-            "large"
+            "large",
+            "extra_large",
+            "double_extra_large"
         ]
 
         module_args = dict(
