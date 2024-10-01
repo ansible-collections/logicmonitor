@@ -424,6 +424,7 @@ class LogicMonitorBaseModule(object):
 
         DISPLAY_NAME = "display_name"
         HOSTNAME = "hostname"
+        LINK = "link"
         COLLECTOR_ID = "collector_id"
         COLLECTOR_DESCRIPTION = "collector_description"
         GROUPS = "groups"

@@ -263,6 +263,7 @@ DEVICE_ID = "deviceId"
 DEVICE_DISPLAY_NAME = "deviceDisplayName"
 
 DISPLAY_NAME = "displayName"
+LINK = "link"
 PREFERRED_COLLECTOR_GROUP_ID = "preferredCollectorGroupId"
 PREFERRED_COLLECTOR_ID = "preferredCollectorId"
 HOST_GROUP_IDS = "hostGroupIds"
@@ -295,6 +296,7 @@ class Device(LogicMonitorBaseModule):
             id=dict(required=False, type="int"),
             display_name=dict(required=False),
             hostname=dict(required=False),
+            link=dict(required=False),
             auto_balance=dict(required=False, type="bool", choices=[True, False]),
             collector_group_id=dict(required=False, type="int"),
             collector_group_name=dict(required=False),
@@ -326,6 +328,7 @@ class Device(LogicMonitorBaseModule):
         self.id = self.params[self.ModuleFields.ID]
         self.display_name = self.params[self.ModuleFields.DISPLAY_NAME]
         self.hostname = self.params[self.ModuleFields.HOSTNAME]
+        self.link = self.params[self.ModuleFields.LINK]
         self.auto_balance = self.params[self.ModuleFields.AUTO_BALANCE]
         self.collector_group_id = self.params[self.ModuleFields.COLLECTOR_GROUP_ID]
         self.collector_group_name = self.params[self.ModuleFields.COLLECTOR_GROUP_NAME]
@@ -523,6 +526,8 @@ class Device(LogicMonitorBaseModule):
             data[DISPLAY_NAME] = self.display_name.strip()
         if self.hostname is not None:
             data[self.NAME] = self.hostname.strip()
+        if self.link is not None:
+            data[LINK] = self.link.strip()
         data = self.build_collector_data(data)
         if self.groups is not None:
             data[HOST_GROUP_IDS] = self.build_group_ids_list_str()
