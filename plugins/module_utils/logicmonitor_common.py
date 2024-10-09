@@ -243,13 +243,25 @@ class LogicMonitorBaseModule(object):
             'total': total
         }
 
-    def rest_request(self, http_verb, resource_path, data="", query_params=None, err_msg="", fail_module=True, collecter_type=""):
+    def rest_request(self, http_verb, resource_path, data="", path_params="" ,query_params=None, err_msg="", fail_module=True, collector_type=""):
+        """
+        Make request to LogicMonitor REST API
+        :param http_verb: GET, PUT, POST, DELETE
+        :param resource_path: REST resource endpoint
+        :param data: data passed along with API request
+        :param path_params: parameters to be passed alongside url (e.g. download collector)
+        :param query_params: query parameter map (e.g. {filter: x}) passed along with API request
+        :param err_msg: error message to display to a user if an error occurs
+        :param fail_module: denotes whether or not module should fail if the request fails
+        :param collector-type: collecter type for deciding X-version for the header
+        :return: result obtained from API requests
+        """
         self.module.debug("Running LogicMonitorBaseModule.rest_request...")
 
         company = self.module.params[self.ModuleFields.COMPANY].lower()
         access_id = self.module.params[self.ModuleFields.ACCESS_ID]
         access_key = self.module.params[self.ModuleFields.ACCESS_KEY]
-        url = "https://" + company + "." + self.LM_BASE_URL + resource_path
+        url = "https://" + company + "." + self.LM_BASE_URL + resource_path + path_params
 
         if data or data == {}:
             data = json.dumps(data)
@@ -267,7 +279,7 @@ class LogicMonitorBaseModule(object):
                 "Content-Type": "application/json"
             }
 
-            if collecter_type == "lmotel":
+            if collector_type == "lmotel":
                 headers["X-Version"] = "4"
 
             # Disable SSL certification for localdev API requests
@@ -1332,7 +1344,7 @@ class OpsNoteUtils(object):
         err_msg = "Failed to retrieve Ops note id  '" + str(id) + "'"
 
         resp = None
-        if self.lm.valid_id(id):
+        if id is not None:
             url = self.lm.OPS_NOTE_BASE_URL + "/" + str(id)
             resp = self.lm.rest_request(self.lm.GET, url, err_msg=err_msg, fail_module=fail_module)
             if resp and not self.lm.success_response(resp) and resp[self.lm.ERROR_CODE] == 1404 \

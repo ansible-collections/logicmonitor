@@ -20,14 +20,14 @@ module: lm_ops_note
 
 short_description: LogicMonitor Ops Note Ansible module for managing ops notes.
 
-version_added: "2.0.4"
+version_added: "2.1.0"
 
 author:
     - Steven Villardi (@stevevillardi)
 
 description:
     - LogicMonitor is a hosted, full-stack, infrastructure monitoring platform.
-    - This module manages alert rules within your LogicMonitor account (i.e. add, update, remove).
+    - This module manages ops notes within your LogicMonitor account (i.e. add, update, remove).
 
 extends_documentation_fragment:
     - logicmonitor.integration.lm_auth_options
@@ -116,7 +116,7 @@ addition_info:
     returned: success
     description: any additional detail related to the action
     type: str
-    sample: "Alert Rule updated successfully"
+    sample: "Ops Note updated successfully"
 '''
 from ansible.module_utils.basic import AnsibleModule
 from ansible_collections.logicmonitor.integration.plugins.module_utils.logicmonitor_common import LogicMonitorBaseModule
@@ -212,7 +212,7 @@ class OpsNote(LogicMonitorBaseModule):
         self.module.debug("Running OpsNote.add...")
 
         if self.success_response(self.info):
-            # rule exists
+            # ops note exists
             if self.force_manage:
                 self.update()
             else:
@@ -220,7 +220,7 @@ class OpsNote(LogicMonitorBaseModule):
         else:
             self.validate_add_fields()
             if not self.info:
-                # rule doesn't exist
+                # ops note doesn't exist
                 data = self.build_ops_note_data()
                 self.module.debug("Data: " + str(data))
                 response = self.ops_note_utils.send_create_request(data)
@@ -240,7 +240,7 @@ class OpsNote(LogicMonitorBaseModule):
         self.module.debug("Running OpsNote.update...")
 
         if self.success_response(self.info):
-            # rule exists
+            # ops note exists
             self.id = self.info[self.ID]
             data = self.build_ops_note_data()
             self.module.debug("Data: " + str(data))
@@ -256,7 +256,7 @@ class OpsNote(LogicMonitorBaseModule):
         else:
             self.validate_update_fields()
             if not self.info and self.force_manage:
-                # rule doesn't exist
+                # ops note doesn't exist
                 self.add()
             else:
                 self.handle_error_response()
