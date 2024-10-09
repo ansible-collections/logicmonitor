@@ -138,6 +138,7 @@ Name | Description
 [logicmonitor.integration.lm_escalation_chain](https://github.com/ansible-collections/logicmonitor/blob/main/docs/logicmonitor.integration.lm_escalation_chain_module.md)|Manage LogicMonitor escalation chains (i.e. add, update, remove)
 [logicmonitor.integration.lm_datasource](https://github.com/ansible-collections/logicmonitor/blob/main/docs/logicmonitor.integration.lm_datasource_module.md)|Manage LogicMonitor device datasources (i.e. sdt)
 [logicmonitor.integration.lm_website_check](https://github.com/ansible-collections/logicmonitor/blob/main/docs/logicmonitor.integration.lm_website_check_module.md)|Manage LogicMonitor website checks (i.e. sdt a ping or web check)
+[logicmonitor.integration.lm_ops_note](https://github.com/ansible-collections/logicmonitor/blob/main/docs/logicmonitor.integration.lm_ops_note_module.md)|Manage LogicMonitor ops notes (i.e. add, update, remove)
 
 ### EventSources
 Name | Description

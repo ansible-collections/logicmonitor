@@ -185,6 +185,7 @@ Gather information about LogicMonitor objects (i.e. collectors, devices, device 
       <ul>
         <li>The full path of the device group to target.</li>
         <li>The Root group full_path should be denoted by empty string "" or "/".</li>
+        <li>This parameter is only valid when using the "device_group" target.</li>
       </ul>
     </td>
   </tr>
@@ -392,7 +393,50 @@ Gather information about LogicMonitor objects (i.e. collectors, devices, device 
     - name: Output
       debug:
         msg: '{{ output }}'
-
+----
+- name: Gather information about all ops notes
+  hosts: localhost
+  tasks:
+    - name: Running module
+      lm_info:
+        target: ops_note
+        company: batman
+        access_id: "id123"
+        access_key: "key123"
+      register: output
+    - name: Output
+      debug:
+        msg: '{{ output }}'
+---
+- name: Gather information about an ops note
+  hosts: localhost
+  tasks:
+    - name: Running module
+      lm_info:
+        target: ops_note
+        company: batman
+        access_id: "id123"
+        access_key: "key123"
+        id: "cNaa1ByBTOSIBi7V61JmVg"
+      register: output
+    - name: Output
+      debug:
+        msg: '{{ output }}'
+---
+- name: Gather information about a device groups devices
+  hosts: localhost
+  tasks:
+    - name: Running module
+      lm_info:
+        target: device_group_devices
+        company: batman
+        access_id: "id123"
+        access_key: "key123"
+        id: 16
+      register: output
+    - name: Output
+      debug:
+        msg: '{{ output }}'
 ```
 
 <a name="return-values"></a>
