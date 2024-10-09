@@ -4,6 +4,25 @@ LogicMonitor Ansible Collection Release Notes
 
 .. contents:: Topics
 
+v2.1.0
+======
+
+New Modules
+-----------
+
+- lm_ops_note: Manage LogicMonitor Ops Notes (i.e. add, update, remove)
+
+Feature Enhancement
+-------------------
+
+- lm_info: Add new target ``ops_note`` to allow users to gather information about ops notes.
+- lm_info: Add new target ``device_group_devices`` to allow users to gather information about devices in a specific device group.
+
+Improvements
+------------
+
+- Added pagination to lm_info module GET requests to allow users to gather information about more than 1000 resources.
+
 v2.0.3
 ======
 
@@ -39,7 +58,7 @@ New Event Source
 v1.3.0
 ======
 
-Licence Update
+License Update
 --------------
 
 - Changed license to BSD (3-clause) from GPL-V3

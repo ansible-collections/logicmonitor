@@ -67,11 +67,13 @@ class LogicMonitorBaseModule(object):
     COLLECTOR_GROUPS_BASE_URL = "/setting/collector/groups"
     DEVICES_BASE_URL = "/device/devices"
     DEVICE_GROUPS_BASE_URL = "/device/groups"
+    DEVICE_GROUP_DEVICES_BASE_URL = "/device/groups/{group_id}/devices"
     DEVICE_DATASOURCES_BASE_URL = "/device/devices/{device_id}/devicedatasources"
     ESCALATION_CHAINS_BASE_URL = "/setting/alert/chains"
     ALERT_RULE_BASE_URL = "/setting/alert/rules"
     RECIPIENT_URL = "/setting/recipients"
     SDT_URL = "/sdt/sdts"
+    OPS_NOTE_BASE_URL = "/setting/opsnotes"
     WEBSITE_BASE_URL = "/website/websites"
 
     """QUERY PARAMETER TOKENS"""
@@ -132,6 +134,7 @@ class LogicMonitorBaseModule(object):
         self.alert_rule_utils = self.create_alert_rule_utils()
         self.recipient_utils = self.create_recipient_utils()
         self.website_check_utils = self.create_website_check_utils()
+        self.ops_note_utils = self.create_ops_note_utils()
 
         if not HAS_REQUESTS:
             self.fail(
@@ -165,6 +168,9 @@ class LogicMonitorBaseModule(object):
     def create_website_check_utils(self):
         return WebsiteCheckUtils(self)
 
+    def create_ops_note_utils(self):
+        return OpsNoteUtils(self)
+
     def process_field(self, original_val, new_val=""):
         """
         Return the default value for an associated field if it's empty
@@ -181,30 +187,75 @@ class LogicMonitorBaseModule(object):
             if not original_val:
                 return new_val
         return original_val
-
-    def rest_request(self, http_verb, resource_path, data="", path_params="", query_params=None, err_msg="",
-                     fail_module=True, collecter_type=""):
+    
+    def paginated_request(self, url, query_params=None, err_msg=""):
         """
-        Make request to LogicMonitor REST API
-        :param http_verb: GET, PUT, POST, DELETE
-        :param resource_path: REST resource endpoint
-        :param data: data passed along with API request
-        :param path_params: parameters to be passed alongside url (e.g. download collector)
+        Make paginated requests to LogicMonitor REST API
+        :param url: REST resource endpoint
         :param query_params: query parameter map (e.g. {filter: x}) passed along with API request
         :param err_msg: error message to display to a user if an error occurs
-        :param fail_module: denotes whether or not module should fail if the request fails
-        :param collector-type: collecter type for deciding X-version for the header
-        :return: result obtained from API requests
+        :return: dictionary containing 'items' (list of all items) and 'total' (total count of items)
         """
+        self.module.debug("Running LogicMonitorBaseModule.paginated_request...")
+
+        if query_params is None:
+            query_params = {}
+
+        all_items = []
+        offset = 0
+        total = None
+        page_size = min(self.size, 1000)  # Use the specified size, but cap it at 1000
+        max_iterations = 1000  # Safety mechanism to prevent infinite loops
+
+        for iteration in range(max_iterations):
+            current_params = query_params.copy()
+            current_params['offset'] = offset
+            current_params['size'] = page_size
+
+            self.module.debug(f"Making request with params: {current_params}")
+            response = self.rest_request(self.GET, url, query_params=current_params, err_msg=err_msg)
+
+            if not self.success_response(response):
+                self.fail(f"{err_msg}\nResponse: {str(response)}")
+
+            items = response.get('items', [])
+            all_items.extend(items)
+
+            if total is None:
+                total = response.get('total', 0)
+                self.module.debug(f"Total items reported by API: {total}")
+
+            self.module.debug(f"Iteration {iteration + 1}: Fetched {len(items)} items. Total items so far: {len(all_items)}.")
+
+            if len(items) == 0 or len(all_items) >= total:
+                self.module.debug("Pagination complete.")
+                break
+
+            offset += len(items)
+
+        else:
+            self.module.warn(f"Reached maximum number of iterations ({max_iterations}). "
+                            f"Total items fetched: {len(all_items)}, Expected total: {total}")
+            self.module.debug(f"Last response: {response}")
+
+        return {
+            'items': all_items,
+            'total': total
+        }
+
+    def rest_request(self, http_verb, resource_path, data="", query_params=None, err_msg="", fail_module=True, collecter_type=""):
         self.module.debug("Running LogicMonitorBaseModule.rest_request...")
 
         company = self.module.params[self.ModuleFields.COMPANY].lower()
         access_id = self.module.params[self.ModuleFields.ACCESS_ID]
         access_key = self.module.params[self.ModuleFields.ACCESS_KEY]
-        url = "https://" + company + "." + self.LM_BASE_URL + resource_path + path_params
+        url = "https://" + company + "." + self.LM_BASE_URL + resource_path
 
         if data or data == {}:
             data = json.dumps(data)
+
+        if query_params is None:
+            query_params = {}
 
         response = None
         try:
@@ -235,7 +286,8 @@ class LogicMonitorBaseModule(object):
             elif http_verb == self.DELETE:
                 req = requests.delete
             else:
-                raise Exception("Invalid request method: " + http_verb.value)
+                raise Exception("Invalid request method: " + http_verb)
+            
             response = req(url, data=data, params=query_params, headers=headers, verify=ssl_cert)
             json_resp = json.loads(response.content)
             self.handle_failed_response(response.status_code, json_resp, err_msg, fail_module)
@@ -365,6 +417,13 @@ class LogicMonitorBaseModule(object):
             if duration <= 0:
                 self.fail("SDT duration must be greater than 0")
             return start_ts + (duration * 60000)
+    
+    def get_ops_note_time(self, note_time):
+        self.module.debug("Running LogicMonitor.get_ops_note_time...")
+        if note_time:
+            return convert_date_to_timestamp(note_time)
+        else:
+            return int(time.time() * 1000)
 
     def parse_filter_request_response(self, resp):
         self.module.debug("Running LogicMonitor.parse_filter_request_response...")
@@ -483,6 +542,19 @@ class LogicMonitorBaseModule(object):
         CHECKPOINT_ID = "checkpoint_id"
         CHECKPOINT_NAME = "checkpoint_name"
 
+        NOTE_TIME = "note_time"
+        NOTE = "note"
+        TAGS = "tags"
+        SCOPES = "scopes"
+        SCOPE_TYPE = "scope_type"
+
+    class OpsNoteFields:
+        OPS_NOTE_ID = "id"
+        OPS_NOTE_TAGS = "tags"
+        OPS_NOTE_HAPPENED_ON_IN_SECONDS = "happenedOnInSec"
+        OPS_NOTE_SCOPES = "scopes"
+        NOTE = "note"
+
     class SDTFields:
         TYPE = "type"
         SDT_TYPE = "sdtType"
@@ -527,7 +599,6 @@ class LogicMonitorBaseModule(object):
         CC_DESTINATIONS = "ccDestinations"
         DESTINATIONS = "destinations"
         DESCRIPTION = "description"
-
 
 class LmotelCollectorUtils(object):
 
@@ -585,7 +656,6 @@ class LmotelCollectorUtils(object):
         url = self.lm.COLLECTORS_BASE_URL + "/" + str(id)
         err_msg = "Failed to update collector"
         return self.lm.rest_request(self.lm.PATCH, url, data, err_msg=err_msg, fail_module=fail_module)
-
 
 class CollectorUtils(object):
 
@@ -657,8 +727,7 @@ class CollectorUtils(object):
         self.lm.module.debug("Running CollectorUtils.get_collectors...")
         err_msg = "Failed to retrieve collectors"
         query_params = {self.lm.SORT: self.lm.ID, self.lm.SIZE: self.lm.size}
-        return self.lm.rest_request(self.lm.GET, self.lm.COLLECTORS_BASE_URL, query_params=query_params,
-                                    err_msg=err_msg)
+        return self.lm.paginated_request(self.lm.COLLECTORS_BASE_URL, query_params=query_params, err_msg=err_msg)
 
     def send_patch_request(self, id, data, fail_module=True):
         self.lm.module.debug("Running Collector.send_patch_request...")
@@ -666,7 +735,6 @@ class CollectorUtils(object):
         err_msg = "Failed to update collector"
         query_params = {self.lm.OPERATION_TYPE: self.lm.optype}
         return self.lm.rest_request(self.lm.PATCH, url, data, err_msg=err_msg, fail_module=fail_module, query_params=query_params)
-
 
 class CollectorGroupUtils(object):
 
@@ -741,7 +809,7 @@ class CollectorGroupUtils(object):
         self.lm.module.debug("Running CollectorGroupUtils.get_collector_groups...")
         err_msg = "Failed to retrieve collector groups"
         query_params = {self.lm.SORT: self.lm.ID, self.lm.SIZE: self.lm.size}
-        return self.lm.rest_request(self.lm.GET, self.lm.COLLECTOR_GROUPS_BASE_URL, query_params=query_params,
+        return self.lm.paginated_request(self.lm.COLLECTOR_GROUPS_BASE_URL, query_params=query_params,
                                     err_msg=err_msg)
 
     def send_create_request(self, data, fail_module=True):
@@ -762,7 +830,6 @@ class CollectorGroupUtils(object):
         err_msg = "Failed to delete collector group " + str(id)
         self.lm.rest_request(self.lm.DELETE, self.lm.COLLECTOR_GROUPS_BASE_URL + '/' + str(id), err_msg=err_msg,
                              fail_module=fail_module)
-
 
 class DeviceUtils(object):
     def __init__(self, lm_obj):
@@ -838,7 +905,7 @@ class DeviceUtils(object):
         self.lm.module.debug("Running DeviceUtils.get_devices...")
         err_msg = "Failed to retrieve devices"
         query_params = {self.lm.SORT: self.lm.ID, self.lm.SIZE: self.lm.size}
-        return self.lm.rest_request(self.lm.GET, self.lm.DEVICES_BASE_URL, query_params=query_params, err_msg=err_msg)
+        return self.lm.paginated_request(self.lm.DEVICES_BASE_URL, query_params=query_params, err_msg=err_msg)
 
     def send_create_request(self, data, fail_module=True):
         self.lm.module.debug("Running Device.send_create_request...")
@@ -853,7 +920,6 @@ class DeviceUtils(object):
         query_params = {self.lm.OPERATION_TYPE: self.lm.optype}
         return self.lm.rest_request(self.lm.PATCH, url, data, err_msg=err_msg, fail_module=fail_module, query_params=query_params)
 
-
 class DeviceGroupUtils(object):
     def __init__(self, lm_obj):
         self.lm = lm_obj
@@ -863,6 +929,13 @@ class DeviceGroupUtils(object):
         resp = self.get_device_group_info(id, full_path)
         if self.lm.success_response(resp):
             return resp[self.lm.ID]
+
+    def get_device_group_devices(self, group_id):
+        self.lm.module.debug("Running DeviceGroupUtils.get_device_group_devices...")
+        err_msg = "Failed to retrieve device group devices"
+        url = self.lm.DEVICE_GROUP_DEVICES_BASE_URL.format(group_id=group_id)
+        query_params = {self.lm.SORT: self.lm.ID, self.lm.SIZE: self.lm.size}
+        return self.lm.paginated_request(url, query_params=query_params, err_msg=err_msg)
 
     def get_device_group_info(self, id, full_path, fail_module=True):
         """
@@ -931,7 +1004,7 @@ class DeviceGroupUtils(object):
         self.lm.module.debug("Running DeviceGroupUtils.get_device_groups...")
         err_msg = "Failed to retrieve device groups"
         query_params = {self.lm.SORT: self.lm.ID, self.lm.SIZE: self.lm.size}
-        return self.lm.rest_request(self.lm.GET, self.lm.DEVICE_GROUPS_BASE_URL, query_params=query_params,
+        return self.lm.paginated_request(self.lm.DEVICE_GROUPS_BASE_URL, query_params=query_params,
                                     err_msg=err_msg)
 
     def send_create_request(self, data, fail_module=True):
@@ -1000,7 +1073,6 @@ class DeviceGroupUtils(object):
                     new_group = self.send_create_request(data)
                     return new_group[self.lm.ID]
 
-
 class EscalationChainUtils(object):
     def __init__(self, lm_obj):
         self.lm = lm_obj
@@ -1055,7 +1127,7 @@ class EscalationChainUtils(object):
         self.lm.module.debug("Running EscalationChainUtils.get_alert_rules...")
         err_msg = "Failed to retrieve escalation chain"
         query_params = {self.lm.SORT: self.lm.ID, self.lm.SIZE: self.lm.size}
-        return self.lm.rest_request(self.lm.GET, self.lm.ESCALATION_CHAINS_BASE_URL, query_params=query_params,
+        return self.lm.paginated_request(self.lm.ESCALATION_CHAINS_BASE_URL, query_params=query_params,
                                     err_msg=err_msg)
 
     def send_create_request(self, data, fail_module=True):
@@ -1076,7 +1148,6 @@ class EscalationChainUtils(object):
         err_msg = "Failed to delete escalation chain " + str(id)
         self.lm.rest_request(self.lm.DELETE, url, err_msg=err_msg,
                              fail_module=fail_module)
-
 
 class AlertRuleUtils(object):
     def __init__(self, lm_obj):
@@ -1132,7 +1203,7 @@ class AlertRuleUtils(object):
         self.lm.module.debug("Running AlertRule.get_alert_rules...")
         err_msg = "Failed to retrieve alert rules"
         query_params = {self.lm.SORT: self.lm.ID, self.lm.SIZE: self.lm.size}
-        return self.lm.rest_request(self.lm.GET, self.lm.ALERT_RULE_BASE_URL, query_params=query_params, err_msg=err_msg)
+        return self.lm.paginated_request(self.lm.ALERT_RULE_BASE_URL, query_params=query_params, err_msg=err_msg)
 
     def send_create_request(self, data, fail_module=True):
         self.lm.module.debug("Running AlertRuleUtils.send_create_request...")
@@ -1152,8 +1223,6 @@ class AlertRuleUtils(object):
         self.lm.rest_request(self.lm.DELETE, self.lm.ALERT_RULE_BASE_URL + '/' + str(id), err_msg=err_msg,
                              fail_module=fail_module)
 
-
-# recipient utils
 class RecipientUtils(object):
     def __init__(self, lm_obj):
         self.lm = lm_obj
@@ -1195,7 +1264,6 @@ class RecipientUtils(object):
             resp = self.lm.rest_request(self.lm.GET, self.lm.RECIPIENT_URL, query_params=query_params,
                                         err_msg=err_msg, fail_module=fail_module)
             return self.lm.parse_filter_request_response(resp)
-
 
 class WebsiteCheckUtils(object):
     def __init__(self, lm_obj):
@@ -1240,3 +1308,59 @@ class WebsiteCheckUtils(object):
             resp = self.lm.rest_request(self.lm.GET, self.lm.WEBSITE_BASE_URL, query_params=query_params,
                                         err_msg=err_msg, fail_module=fail_module)
             return self.lm.parse_filter_request_response(resp)
+
+class OpsNoteUtils(object):
+    def __init__(self, lm_obj):
+        self.lm = lm_obj
+
+    def get_ops_note_info(self, id, fail_module=True):
+        self.lm.module.debug("Running OpsNoteUtils.get_ops_note_info...")
+
+        resp = None
+        if id is not None:
+            resp = self.get_ops_note_by_id(id, False)
+        if not self.lm.success_response(resp):
+            if not resp:
+                err_msg = "Ops note doesn't exist "
+            else:
+                err_msg = "Failed to retrieve Ops note \nResponse: " + str(resp)
+            self.lm.handle_module_err(err_msg, fail_module)
+        return resp
+
+    def get_ops_note_by_id(self, id, fail_module=True):
+        self.lm.module.debug("Running OpsNoteUtils.get_ops_note_by_id...")
+        err_msg = "Failed to retrieve Ops note id  '" + str(id) + "'"
+
+        resp = None
+        if self.lm.valid_id(id):
+            url = self.lm.OPS_NOTE_BASE_URL + "/" + str(id)
+            resp = self.lm.rest_request(self.lm.GET, url, err_msg=err_msg, fail_module=fail_module)
+            if resp and not self.lm.success_response(resp) and resp[self.lm.ERROR_CODE] == 1404 \
+                    and resp[self.lm.ERROR_MESSAGE].startswith("The requested ops note does not exist"):
+                resp = None
+        return resp
+
+    def get_ops_notes(self):
+        self.lm.module.debug("Running OpsNoteUtils.get_ops_notes...")
+        err_msg = "Failed to retrieve Ops notes"
+        query_params = {self.lm.SORT: self.lm.ID, self.lm.SIZE: self.lm.size}
+        return self.lm.paginated_request(self.lm.OPS_NOTE_BASE_URL, query_params=query_params, err_msg=err_msg)
+
+    def send_create_request(self, data, fail_module=True):
+        self.lm.module.debug("Running OpsNoteUtils.send_create_request...")
+        err_msg = "Failed to create Ops note"
+        return self.lm.rest_request(self.lm.POST, self.lm.OPS_NOTE_BASE_URL, data, err_msg=err_msg,
+                                    fail_module=fail_module)
+
+    def send_patch_request(self, id, data, fail_module=True):
+        self.lm.module.debug("Running OpsNoteUtils.send_patch_request...")
+        url = self.lm.OPS_NOTE_BASE_URL + "/" + str(id)
+        err_msg = "Failed to update ops note"
+        return self.lm.rest_request(self.lm.PATCH, url, data, err_msg=err_msg, fail_module=fail_module)
+
+    def send_delete_request(self, id, fail_module=True):
+        self.lm.module.debug("Running OpsNoteUtils.send_delete_request...")
+        err_msg = "Failed to delete ops note " + str(id)
+        self.lm.rest_request(self.lm.DELETE, self.lm.OPS_NOTE_BASE_URL + '/' + str(id), err_msg=err_msg,
+                             fail_module=fail_module)
+        

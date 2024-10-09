@@ -63,6 +63,7 @@ options:
         description:
             - Full path of the device group to target.
             - Root group full_path should be denoted by empty string "" or "/".
+            - Parameter only applicable to device_group target.
         type: str
     size:
         description:
@@ -282,6 +283,8 @@ COLLECTOR = "collector"
 COLLECTOR_GROUP = "collector_group"
 DEVICE = "device"
 DEVICE_GROUP = "device_group"
+DEVICE_GROUP_DEVICES = "device_group_devices"
+OPS_NOTE = "ops_note"
 DATA = "data"
 SIZE = 500
 ALERT_RULE = "alert_rule"
@@ -329,6 +332,23 @@ def retrieve_device_group_info(lm):
     return lm.device_group_utils.get_device_groups()
 
 
+def retrieve_device_group_devices_info(lm):
+    lm.module.debug("Running retrieve_device_group_devices_info...")
+    id = lm.module.params[lm.ModuleFields.ID]
+
+    if lm.valid_id(id):
+        return lm.device_group_utils.get_device_group_devices(id)
+    lm.module.debug("id not provided, retrieving all devices.")
+    return lm.device_utils.get_devices()
+
+def retrieve_ops_note_info(lm):
+    lm.module.debug("Running retrieve_ops_note_info...")
+    id = lm.module.params[lm.ModuleFields.ID]
+
+    if lm.valid_id(id):
+        return lm.ops_note_utils.get_ops_note_info(id)
+    return lm.ops_note_utils.get_ops_notes()
+
 def retrieve_alert_rule_info(lm):
     lm.module.debug("Running retrieve_alert_rule_info...")
     id = lm.module.params[lm.ModuleFields.ID]
@@ -357,6 +377,8 @@ def run():
         COLLECTOR_GROUP,
         DEVICE,
         DEVICE_GROUP,
+        DEVICE_GROUP_DEVICES,
+        OPS_NOTE,
         ALERT_RULE,
         ESCALATION_CHAIN
     ]
@@ -405,6 +427,10 @@ def run():
         result[DATA] = retrieve_device_info(lm)
     elif target == DEVICE_GROUP:
         result[DATA] = retrieve_device_group_info(lm)
+    elif target == DEVICE_GROUP_DEVICES:
+        result[DATA] = retrieve_device_group_devices_info(lm)
+    elif target == OPS_NOTE:
+        result[DATA] = retrieve_ops_note_info(lm)
     elif target == ALERT_RULE:
         result[DATA] = retrieve_alert_rule_info(lm)
     elif target == ESCALATION_CHAIN:
