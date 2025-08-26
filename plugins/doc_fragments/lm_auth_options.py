@@ -16,6 +16,14 @@ class ModuleDocFragment(object):
                 - A user logging into their account at "batman.logicmonitor.com" would use "batman".
             required: true
             type: str
+        domain:
+            description:
+                - The LogicMonitor domain name associated with the account.
+                - A user logging into "batman.lmgov.us" would use "lmgov.us" as the domain.
+                - Defaults to "logicmonitor.com" if not specified.
+            required: false
+            type: str
+            default: logicmonitor.com
         access_id:
             description:
                 - The Access ID API token associated with the user's account that's used to query the LogicMonitor API.

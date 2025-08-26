@@ -61,7 +61,7 @@ class LogicMonitorBaseModule(object):
     """ Initialize the LogicMonitor base object """
 
     """URLS"""
-    LM_BASE_URL = "logicmonitor.com/santaba/rest"
+    LM_BASE_URL = "/santaba/rest"
     DOWNLOAD_COLLECTOR_URL = "/setting/collector/collectors/{id}/bootstraps/Linux{arch}"
     COLLECTORS_BASE_URL = "/setting/collector/collectors"
     COLLECTOR_GROUPS_BASE_URL = "/setting/collector/groups"
@@ -118,6 +118,7 @@ class LogicMonitorBaseModule(object):
         if self.ModuleFields.ACTION in self.params:
             self.action = self.params[self.ModuleFields.ACTION]
         self.company = self.params[self.ModuleFields.COMPANY]
+        self.domain = self.params[self.ModuleFields.DOMAIN]
         self.access_id = self.params[self.ModuleFields.ACCESS_ID]
         self.access_key = self.params[self.ModuleFields.ACCESS_KEY]
         self.fqdn = socket.getfqdn()
@@ -199,9 +200,10 @@ class LogicMonitorBaseModule(object):
         self.module.debug("Running LogicMonitorBaseModule.rest_request...")
 
         company = self.module.params[self.ModuleFields.COMPANY].lower()
+        domain = self.module.params[self.ModuleFields.DOMAIN].lower()
         access_id = self.module.params[self.ModuleFields.ACCESS_ID]
         access_key = self.module.params[self.ModuleFields.ACCESS_KEY]
-        url = "https://" + company + "." + self.LM_BASE_URL + resource_path + path_params
+        url = "https://" + company + "." + domain + self.LM_BASE_URL + resource_path + path_params
 
         if data or data == {}:
             data = json.dumps(data)
@@ -407,6 +409,7 @@ class LogicMonitorBaseModule(object):
         TARGET = "target"
         ACTION = "action"
         COMPANY = "company"
+        DOMAIN = "domain"
         ACCESS_ID = "access_id"
         ACCESS_KEY = "access_key"
 

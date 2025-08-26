@@ -77,6 +77,25 @@ Manage LogicMonitor devices
   </tr>
   <tr>
     <td colspan="1">
+      <b>domain</b>
+      <div>
+        <span>string</span>
+      </div>
+    <td>
+      <b>Default:</b>
+      <ul>
+        <li>logicmonitor.com</li>
+      </ul>
+    </td>
+    <td>
+      <ul>
+        <li>The LogicMonitor domain name associated with the account.</li>
+        <li>A user logging into "batman.lmgov.us" would use "lmgov.us" as the domain.</li>
+      </ul>
+    </td>
+  </tr>
+  <tr>
+    <td colspan="1">
       <b>access_id</b>
       <div>
         <span>string</span>
@@ -453,6 +472,7 @@ Manage LogicMonitor devices
       lm_device:
         action: add
         company: batman
+        domain: lmgov.us
         access_id: "id123"
         access_key: "key123"
         display_name: "Ansible Device"
@@ -474,6 +494,7 @@ Manage LogicMonitor devices
       lm_device:
         action: update
         company: batman
+        domain: lmgov.us
         access_id: "id123"
         access_key: "key123"
         id: 1
@@ -497,6 +518,7 @@ Manage LogicMonitor devices
       lm_device:
         action: remove
         company: batman
+        domain: lmgov.us
         access_id: "id123"
         access_key: "key123"
         display_name: "Ansible_Device"
@@ -509,6 +531,7 @@ Manage LogicMonitor devices
       logicmonitor:
         action: sdt
         company: batman
+        domain: lmgov.us
         access_id: "id123"
         access_key: "key123"
         display_name: "127.0.0.1_collector_4"

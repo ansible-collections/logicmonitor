@@ -75,6 +75,25 @@ Manage LogicMonitor collectors
   </tr>
   <tr>
     <td colspan="1">
+      <b>domain</b>
+      <div>
+        <span>string</span>
+      </div>
+    <td>
+      <b>Default:</b>
+      <ul>
+        <li>logicmonitor.com</li>
+      </ul>
+    </td>
+    <td>
+      <ul>
+        <li>The LogicMonitor domain name associated with the account.</li>
+        <li>A user logging into "batman.lmgov.us" would use "lmgov.us" as the domain.</li>
+      </ul>
+    </td>
+  </tr>
+  <tr>
+    <td colspan="1">
       <b>access_id</b>
       <div>
         <span>string</span>
@@ -171,6 +190,7 @@ Manage LogicMonitor collectors
       lm_otel_collector:
         action: add
         company: batman
+        domain: lmgov.us
         access_id: "id123"
         access_key: "key123"
         description: "localhost"
@@ -185,6 +205,7 @@ Manage LogicMonitor collectors
       lm_otel_collector:
         action: remove
         company: batman
+        domain: lmgov.us
         access_id: "id123"
         access_key: "key123"
         install_path: "/usr/local/logicmonitor"

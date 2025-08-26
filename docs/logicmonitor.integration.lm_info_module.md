@@ -76,6 +76,25 @@ Gather information about LogicMonitor objects (i.e. collectors, devices, device 
   </tr>
   <tr>
     <td colspan="1">
+      <b>domain</b>
+      <div>
+        <span>string</span>
+      </div>
+    <td>
+      <b>Default:</b>
+      <ul>
+        <li>logicmonitor.com</li>
+      </ul>
+    </td>
+    <td>
+      <ul>
+        <li>The LogicMonitor domain name associated with the account.</li>
+        <li>A user logging into "batman.lmgov.us" would use "lmgov.us" as the domain.</li>
+      </ul>
+    </td>
+  </tr>
+  <tr>
+    <td colspan="1">
       <b>access_id</b>
       <div>
         <span>string</span>
@@ -263,6 +282,7 @@ Gather information about LogicMonitor objects (i.e. collectors, devices, device 
       lm_info:
         target: collector_group
         company: batman
+        domain: lmgov.us
         access_id: "id123"
         access_key: "key123"
         name: "collector group"
@@ -279,6 +299,7 @@ Gather information about LogicMonitor objects (i.e. collectors, devices, device 
       lm_info:
         target: device
         company: batman
+        domain: lmgov.us
         access_id: "id123"
         access_key: "key123"
       register: output
@@ -294,6 +315,7 @@ Gather information about LogicMonitor objects (i.e. collectors, devices, device 
       lm_info:
         target: device
         company: batman
+        domain: lmgov.us
         access_id: "id123"
         access_key: "key123"
         hostname: "127.0.0.1"
@@ -310,6 +332,7 @@ Gather information about LogicMonitor objects (i.e. collectors, devices, device 
       lm_info:
         target: device_group
         company: batman
+        domain: lmgov.us
         access_id: "id123"
         access_key: "key123"
       register: output
@@ -325,6 +348,7 @@ Gather information about LogicMonitor objects (i.e. collectors, devices, device 
       lm_info:
         target: device_group
         company: batman
+        domain: lmgov.us
         access_id: "id123"
         access_key: "key123"
         full_path: "Devices by Type/Collectors"
@@ -341,6 +365,7 @@ Gather information about LogicMonitor objects (i.e. collectors, devices, device 
       lm_info:
         target: alert_rule
         company: batman
+        domain: lmgov.us
         access_id: "id123"
         access_key: "key123"
       register: output
@@ -356,6 +381,7 @@ Gather information about LogicMonitor objects (i.e. collectors, devices, device 
       lm_info:
         target: alert_rule
         company: batman
+        domain: lmgov.us
         access_id: "id123"
         access_key: "key123"
         id: 16
@@ -371,6 +397,7 @@ Gather information about LogicMonitor objects (i.e. collectors, devices, device 
       lm_info:
         target: escalation_chain
         company: batman
+        domain: lmgov.us
         access_id: "id123"
         access_key: "key123"
       register: output
@@ -385,6 +412,7 @@ Gather information about LogicMonitor objects (i.e. collectors, devices, device 
       lm_info:
         target: escalation_chain
         company: batman
+        domain: lmgov.us
         access_id: "id123"
         access_key: "key123"
         id: 16

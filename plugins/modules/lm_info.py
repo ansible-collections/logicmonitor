@@ -365,6 +365,7 @@ def run():
         argument_spec=dict(
             target=dict(required=True, choices=targets),
             company=dict(required=True),
+            domain=dict(required=False,default="logicmonitor.com"),
             access_id=dict(required=True),
             access_key=dict(required=True, no_log=True),
             id=dict(required=False, type="int"),
