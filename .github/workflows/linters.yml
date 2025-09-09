@@ -10,9 +10,9 @@ jobs:
         run: |
           sudo apt-get update -y
           sudo apt-get install jq libyaml-dev git build-essential findutils libsystemd-dev -y
-          sudo python3 -m pip install -r test_requirements.txt --break-system-packages 
+          sudo python3 -m pip install -r test_requirements.txt
           sudo python3 -m pip install --upgrade --ignore-installed PyYAML
-          sudo python3 -m pip install --upgrade pip --break-system-packages
+          sudo python3 -m pip install --upgrade pip
           sudo python3 -m pip install --upgrade virtualenv
           sudo python3 -m pip install --upgrade setuptools
       - name: Run tox environments
