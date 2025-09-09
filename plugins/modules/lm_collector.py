@@ -1,11 +1,10 @@
 #!/usr/bin/python
-
-# Copyright (c) 2022 LogicMonitor, Inc.
-# Use of this source code is governed by a BSD-style
-# license that can be found in the LICENSE file.
+# -*- coding: utf-8 -*-
+# Copyright: (c) 2022-2025, LogicMonitor, Inc.
+# GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
+# SPDX-License-Identifier: GPL-3.0-or-later
 
 from __future__ import (absolute_import, division, print_function)
-
 __metaclass__ = type
 
 ANSIBLE_METADATA = {
@@ -18,167 +17,195 @@ DOCUMENTATION = r'''
 ---
 module: lm_collector
 
-short_description: LogicMonitor Collector Ansible module for managing collectors
+short_description: Manage LogicMonitor collectors
 
 version_added: "1.0.0"
 
 author:
-    - Carlos Alvarenga (@cealvar)
+  - Carlos Alvarenga (@cealvar)
+  - Madhvi Jain (@madhvi-jain)
 
 description:
-    - LogicMonitor is a hosted, full-stack, infrastructure monitoring platform.
-    - This module manages collectors within your LogicMonitor account (i.e. add, remove, sdt).
-
-extends_documentation_fragment:
-    - logicmonitor.integration.lm_auth_options
-    - logicmonitor.integration.lm_sdt_options
-
-requirements:
-    - Python 'requests' package
-    - An existing LogicMonitor account
-    - Linux machine
+  - Add, update, remove LogicMonitor collectors, or place a collector into scheduled downtime (SDT).
 
 options:
-    action:
-        description:
-            - The action you wish to perform on the collector.
-            - Add = Install existing collector on a Linux machine or add a new collector to your LogicMonitor account
-              & install it.
-            - Update = Update properties, description, etc for a collector in your LogicMonitor account.
-            - Remove = Remove a collector from your LogicMonitor account & uninstall it from Linux machine.
-            - SDT = Schedule downtime for a collector in your LogicMonitor account.
-        required: true
-        type: str
-        choices: ['add', 'update', 'remove', 'sdt']
-    id:
-        description:
-            - ID of the collector.
-            - Required for update, remove, sdt if description isn't provided.
-            - Optional for action=add (only used when installing an existing collector).
-        type: int
+  action:
     description:
-        description:
-            - The long text description of the collector in your LogicMonitor account.
-            - Optional for action=add.
-            - Required for update, remove, sdt if id isn't provided.
-            - Optional for action=add (only used when installing an existing collector).
-        type: str
-    install_path:
-        description:
-            - The full path of the directory where the collector agent should be installed or is installed.
-            - Optional for action=add & action=remove
-        type: str
-        default: '/usr/local/logicmonitor'
-    install_user:
-        description:
-            - The username to associate with the installed collector.
-            - Optional for action=add
-        type: str
-        default: 'logicmonitor'
-    collector_group_id:
-        description:
-            - ID of the collector group associated with the collector being added.
-            - Optional for action=add and action=update
-        type: int
-    collector_group_name:
-        description:
-            - Name of the collector group associated with the collector being added.
-            - Default/ungrouped collector group should be denoted by empty string "" or "@default".
-            - Optional for action=add and action=update
-        type: str
-    device_group_id:
-        description:
-            - ID of the device group associated with the collector being added.
-            - Optional for action=add
-        type: int
-    device_group_full_path:
-        description:
-            - Full path of the device group associated with the collector being added.
-            - Default/root device group should be denoted by empty string "" or "/".
-            - Optional for action=add
-        type: str
-    version:
-        description:
-            - The version of the collector to download & install.
-            - 28.005 = required release
-            - 29.003 = general release
-            - 29.107 = early release
-            - General release is typically recommended.
-            - Defaults to the latest GD Collector.
-            - Optional for action=add
-        type: str
-    size:
-        description:
-            - The size of the collector to download.
-            - nano = <2GB
-            - small = 2GB
-            - medium = 4GB
-            - large = 8GB
-            - Optional for action=add
-        type: str
-        default: 'small'
-        choices: ['nano', 'small', 'medium', 'large']
-    platform:
-        description:
-            - The operating system of the platform where playbook will be executed.
-            - This field is only relevant for testing purposes.
-            - This field should not be provided when using product since collector installation is only supported on
-              Linux machines.
-        type: str
-    escalating_chain_id:
-        description:
-            - The ID of the escalation chain to configure for the collector being updated.
-            - 0 denotes to not assign any escalation chain (i.e. disable alert routing/notifications)
-            - Optional for action=update.
-        type: int
-    escalating_chain_name:
-        description:
-            - The name of the escalation chain to configure for the collector being updated.
-            - Optional for action=update.
-        type: str
-    backup_collector_id:
-        description:
-            - The ID of the failover collector to configure for the collector being updated.
-            - 0 denotes to not assign any failover collector.
-            - Optional for action=update.
-        type: int
-    backup_collector_description:
-        description:
-            - The long text description of the failover collector to configure for the collector being updated.
-            - Optional for action=update.
-        type: str
-    resend_collector_down_alert_interval:
-        description:
-            - The interval, in minutes, after which collector down alert notifications will be resent.
-            - 0 denotes to send the collector down alert once.
-            - Optional for action=update.
-        type: int
-    properties:
-        description:
-            - A JSON object of properties to configure for the LogicMonitor collector.
-            - This parameter will add or update existing properties in your LogicMonitor account.
-            - Must be enclosed within {} braces.
-            - Optional for action=update.
-        type: dict
-    force_manage:
-        description:
-            - A boolean flag to enable/disable the feature to add a collector when the initial action=update because the
-              collector doesn't exist.
-            - Optional for action=update.
-        type: bool
-        default: True
-        choices: [True, False]
-    optype:
-        description:
-            - A string describing the operation on properties when updating collector...
-              (1) replace - a property would be updated if it exists already else a new property will be created
-              (2) refresh - a property would be updated if it exists already else a new property will be created,
-                  any existing property not provided during update will be removed
-              (3) add - a property would be ignored if it exists already else a new property will be created
-            - Optional for action=update.
-        type: str
-        default: replace
-        choices: [add, replace, refresh]
+      - The action to perform on the collector.
+      - C(add) to create or install a collector.
+      - C(update) to modify an existing collector.
+      - C(remove) to delete/uninstall a collector.
+      - C(sdt) to schedule downtime for a collector.
+    type: str
+    required: true
+    choices: ['add', 'update', 'remove', 'sdt']
+
+  company:
+    description:
+      - LogicMonitor account company name (e.g. C(batman) for C(batman.logicmonitor.com)).
+    type: str
+    required: true
+
+  domain:
+    description:
+      - LogicMonitor account domain suffix (e.g. C(lmgov.us) for C(batman.lmgov.us)).
+    type: str
+    default: logicmonitor.com
+
+  access_id:
+    description:
+      - LogicMonitor API Access ID.
+    type: str
+    required: true
+
+  access_key:
+    description:
+      - LogicMonitor API Access Key. If it begins with a special character, prefix with C(!unsafe) in playbooks.
+    type: str
+    required: true
+
+  id:
+    description:
+      - Collector ID.
+      - Required for C(update), C(remove), C(sdt) if I(description) is not provided.
+      - Optional for C(add) (when installing an existing collector).
+    type: int
+
+  description:
+    description:
+      - Collector description.
+      - Optional for C(add).
+      - Required for C(update), C(remove), C(sdt) if I(id) is not provided.
+      - Optional for C(add) when installing an existing collector.
+    type: str
+
+  install_path:
+    description:
+      - Directory where the collector agent is or will be installed.
+    type: str
+    default: /usr/local/logicmonitor
+
+  install_user:
+    description:
+      - Username to associate with the installed collector.
+    type: str
+    default: logicmonitor
+
+  collector_group_id:
+    description:
+      - ID of the collector group to associate with the collector (C(add)).
+    type: int
+
+  collector_group_name:
+    description:
+      - Name of the collector group to associate with the collector (C(add)).
+      - Use empty string C("") or C(@default) for the default (Ungrouped) collector group.
+    type: str
+
+  device_group_id:
+    description:
+      - ID of the device group to associate with the collector (C(add)).
+    type: int
+
+  device_group_full_path:
+    description:
+      - Full path of the device group to associate with the collector (C(add)).
+      - Use empty string C("") or C(/) for the root group.
+    type: str
+
+  platform:
+    description:
+      - Target platform string (e.g. C(Linux)).
+    type: str
+
+  version:
+    description:
+      - Collector version to download and install. Defaults to the latest generally available version if omitted.
+    type: str
+
+  size:
+    description:
+      - Collector size profile to install (C(add)).
+    type: str
+    default: small
+    choices: ['nano', 'small', 'medium', 'large']
+
+  escalating_chain_id:
+    description:
+      - ID of the escalation chain to configure (C(update)).
+      - C(0) disables alert routing/notifications.
+    type: int
+
+  escalating_chain_name:
+    description:
+      - Name of the escalation chain to configure (C(update)).
+    type: str
+
+  backup_collector_id:
+    description:
+      - ID of the failover collector to configure (C(update)).
+      - C(0) removes any failover collector.
+    type: int
+
+  backup_collector_description:
+    description:
+      - Long description of the failover collector to configure (C(update)).
+    type: str
+
+  resend_collector_down_alert_interval:
+    description:
+      - Interval, in minutes, after which collector down alerts are resent.
+      - C(0) sends the collector down alert only once.
+    type: int
+
+  properties:
+    description:
+      - Dictionary of properties to set on the collector (C(update)).
+      - Existing properties may be added/replaced depending on I(optype).
+    type: dict
+
+  start_time:
+    description:
+      - SDT start time. If omitted, defaults to the time the action is executed.
+      - Format C(yyyy-MM-dd HH:mm) or C(yyyy-MM-dd HH:mm z) where C(z) is C(am) or C(pm).
+    type: str
+    default: ""
+
+  end_time:
+    description:
+      - SDT end time. If omitted, I(duration) is used.
+      - Format C(yyyy-MM-dd HH:mm) or C(yyyy-MM-dd HH:mm z).
+    type: str
+    default: ""
+
+  duration:
+    description:
+      - SDT duration in minutes (used when I(end_time) is not provided).
+    type: int
+    default: 30
+
+  comment:
+    description:
+      - SDT note/comment.
+    type: str
+    default: ""
+
+  force_manage:
+    description:
+      - When true, if an C(update) targets a non-existent collector, the task may add/manage it.
+    type: bool
+    default: true
+    choices: [true, false]
+
+  optype:
+    description: |-
+      How to handle property updates for C(update).
+      - C(replace): update existing properties or create if missing (default).
+      - C(refresh): update existing and remove any not provided in this update.
+      - C(add): create only if property does not already exist.
+    type: str
+    default: replace
+    choices: ['refresh', 'replace', 'add']
 '''
 
 EXAMPLES = r'''

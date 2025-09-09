@@ -4,6 +4,9 @@
 # Use of this source code is governed by a BSD-style
 # license that can be found in the LICENSE file.
 
+# GNU General Public License v3.0+
+# (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
+
 from __future__ import (absolute_import, division, print_function)
 
 __metaclass__ = type
@@ -159,11 +162,10 @@ EXAMPLES = r'''
         company: batman
         access_id: "id123"
         access_key: "key123"
-        hostname: 127.0.0.1
       register: output
     - name: Output
       debug:
-        msg: '{{ output }}'
+        msg: "{{ output }}"
 
 # Get all device groups
 - name: Get device groups
@@ -178,7 +180,7 @@ EXAMPLES = r'''
       register: output
     - name: Output
       debug:
-        msg: '{{ output }}'
+        msg: "{{ output }}"
 
 # Get device group
 - name: Get device group
@@ -365,7 +367,7 @@ def run():
         argument_spec=dict(
             target=dict(required=True, choices=targets),
             company=dict(required=True),
-            domain=dict(required=False,default="logicmonitor.com"),
+            domain=dict(required=False, default="logicmonitor.com"),
             access_id=dict(required=True),
             access_key=dict(required=True, no_log=True),
             id=dict(required=False, type="int"),
