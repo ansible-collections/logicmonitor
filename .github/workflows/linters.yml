@@ -1,29 +1,40 @@
 ---
 on: [push, pull_request]
 name: Linters
+
 jobs:
   linters:
     runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
 
-      - name: Install OS deps
+    steps:
+      - uses: actions/checkout@v4
+
+      # Use toolcache Python instead of Debian's /usr/bin/python3
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: 'pip'
+          cache-dependency-path: |
+            test_requirements.txt
+            **/pyproject.toml
+            **/requirements*.txt
+
+      - name: Install OS dependencies
         run: |
           sudo apt-get update -y
           sudo apt-get install -y jq libyaml-dev git build-essential findutils libsystemd-dev
 
-      # >>> Workaround: overlay packaging 25.0 without uninstalling Debian's 24.0
-      - name: Pre-install packaging 25.0 (ignore-installed)
+      - name: Create venv & install Python deps
         run: |
-          python3 --version
-          which python3
-          python3 -m pip --version
-          sudo python3 -m pip install --upgrade --ignore-installed 'packaging==25.0'
-          sudo python3 -m pip install --upgrade pip virtualenv setuptools
+          python -m venv .venv
+          . .venv/bin/activate
+          python -m pip install -U pip
+          # If you have a lint/CI requirements file, install it here:
+          pip install -r test_requirements.txt
+          # Ensure tox is available in the venv
+          pip install tox
 
-      - name: Install Python deps for linters
+      - name: Run tox
         run: |
-          sudo python3 -m pip install -r test_requirements.txt
-
-      - name: Run tox environments
-        run: tox
+          . .venv/bin/activate
+          tox
