@@ -1,19 +1,40 @@
 ---
 on: [push, pull_request]
 name: Linters
+
 jobs:
   linters:
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v3
-      - name: Install dependencies
+      - uses: actions/checkout@v4
+
+      # Use toolcache Python instead of Debian's /usr/bin/python3
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: 'pip'
+          cache-dependency-path: |
+            test_requirements.txt
+            **/pyproject.toml
+            **/requirements*.txt
+
+      - name: Install OS dependencies
         run: |
           sudo apt-get update -y
-          sudo apt-get install jq libyaml-dev git build-essential findutils libsystemd-dev -y
-          sudo python3 -m pip install -r test_requirements.txt
-          sudo python3 -m pip install --upgrade --ignore-installed PyYAML
-          sudo python3 -m pip install --upgrade pip
-          sudo python3 -m pip install --upgrade virtualenv
-          sudo python3 -m pip install --upgrade setuptools
-      - name: Run tox environments
-        run: tox
+          sudo apt-get install -y jq libyaml-dev git build-essential findutils libsystemd-dev
+
+      - name: Create venv & install Python deps
+        run: |
+          python -m venv .venv
+          . .venv/bin/activate
+          python -m pip install -U pip
+          # If you have a lint/CI requirements file, install it here:
+          pip install -r test_requirements.txt
+          # Ensure tox is available in the venv
+          pip install tox
+
+      - name: Run tox
+        run: |
+          . .venv/bin/activate
+          tox

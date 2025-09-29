@@ -4,6 +4,15 @@ LogicMonitor Ansible Collection Release Notes
 
 .. contents:: Topics
 
+v2.0.4
+======
+
+Improvements
+------------
+
+- Introduced a new optional "domain" field across all LogicMonitor Ansible playbooks.
+  It defaults to "logicmonitor.com" if not specified and identifies the LogicMonitor domain associated with the account.
+
 v2.0.3
 ======
 

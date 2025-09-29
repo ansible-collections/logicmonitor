@@ -4,6 +4,9 @@
 # Use of this source code is governed by a BSD-style
 # license that can be found in the LICENSE file.
 
+# GNU General Public License v3.0+
+# (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
+
 from __future__ import (absolute_import, division, print_function)
 
 __metaclass__ = type
@@ -188,7 +191,7 @@ EXAMPLES = r'''
         suppress_ACK_STD: true
         escalation_chain_id: 2
         escalation_interval: 30
-        resource_properties_filter : {"key1": "value1","key2": "value2"}
+        resource_properties_filter: {"key1": "value1", "key2": "value2"}
 
 # Example of removing a alert rule
 - name: Remove Alert Rule
@@ -266,6 +269,7 @@ class AlertRule(LogicMonitorBaseModule):
         module_args = dict(
             action=dict(required=True, choices=actions),
             company=dict(required=True),
+            domain=dict(required=False, default="logicmonitor.com"),
             access_id=dict(required=True),
             access_key=dict(required=True, no_log=True),
             id=dict(required=False, type="int"),

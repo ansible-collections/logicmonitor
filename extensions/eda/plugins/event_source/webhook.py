@@ -32,9 +32,9 @@ from __future__ import annotations
 import asyncio
 import logging
 import sys
-from pathlib import Path
 from typing import Any
 
+import aiofiles
 import yaml
 from aiohttp import web
 from ansible.constants import DEFAULT_VAULT_ID_MATCH
@@ -108,6 +108,7 @@ async def main(queue: asyncio.Queue, args: dict[str, Any]) -> None:
         If the vault file is missing
     ValueError
         If vault_path or vault_pass are missing
+
     """
     logger.info("Starting webhook")
 
@@ -124,9 +125,9 @@ async def main(queue: asyncio.Queue, args: dict[str, Any]) -> None:
         # init vaultlib
         logger.info("Reading vault content")
         vault = VaultLib([(DEFAULT_VAULT_ID_MATCH, VaultSecret(vault_pass.encode()))])
-        path = Path(vault_path)
-        with path.open(encoding="utf-8") as vault_file:
-            vault_dict = yaml.safe_load(vault.decrypt(vault_file.read()))
+        async with aiofiles.open(vault_path, encoding="utf-8") as vault_file:
+            vault_content = await vault_file.read()
+            vault_dict = yaml.safe_load(vault.decrypt(vault_content))
         logger.info("Successfully read vault content")
     except FileNotFoundError:
         logger.exception("File %s doesn't exist!!!", vault_path)

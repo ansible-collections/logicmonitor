@@ -4,6 +4,9 @@
 # Use of this source code is governed by a BSD-style
 # license that can be found in the LICENSE file.
 
+# GNU General Public License v3.0+
+# (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
+
 from __future__ import (absolute_import, division, print_function)
 
 
@@ -161,6 +164,7 @@ class LmotelCollector(LogicMonitorBaseModule):
         module_args = dict(
             action=dict(required=True, choices=actions),
             company=dict(required=True),
+            domain=dict(required=False, default="logicmonitor.com"),
             access_id=dict(required=True),
             access_key=dict(required=True, no_log=True),
             id=dict(required=False, type="int"),
@@ -319,8 +323,7 @@ class LmotelCollector(LogicMonitorBaseModule):
 
     def kill_process(self):
         self.module.debug("Running LmotelCollector.kill_process...")
-        p = subprocess.Popen(['ps', '-A'], stdout=subprocess.PIPE)
-        out, err = p.communicate()
+        rc, out, err = self.module.run_command(['ps', '-A'], check_rc=True)
         for line in out.decode().splitlines():
             if 'lmotel' in line:
                 pid = int(line.split(None, 1)[0])

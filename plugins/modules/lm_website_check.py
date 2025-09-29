@@ -4,6 +4,9 @@
 # Use of this source code is governed by a BSD-style
 # license that can be found in the LICENSE file.
 
+# GNU General Public License v3.0+
+# (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
+
 from __future__ import (absolute_import, division, print_function)
 
 __metaclass__ = type
@@ -167,6 +170,7 @@ class WebsiteCheck(LogicMonitorBaseModule):
         module_args = dict(
             action=dict(required=True, choices=actions),
             company=dict(required=True),
+            domain=dict(required=False, default="logicmonitor.com"),
             access_id=dict(required=True),
             access_key=dict(required=True, no_log=True),
             start_time=dict(required=False, default=""),
