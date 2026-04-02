@@ -4,6 +4,16 @@ LogicMonitor Ansible Collection Release Notes
 
 .. contents:: Topics
 
+v2.0.5
+======
+
+Improvements
+------------
+
+- License updated
+- Updated README with new license information and copyright details
+- Added license file to the repository
+
 v2.0.4
 ======
 
