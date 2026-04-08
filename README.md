@@ -167,6 +167,6 @@ See the [changelog](https://github.com/ansible-collections/logicmonitor/blob/mai
 
 ## Licensing
 
- BSD (3-clause) License
+ Apache License, Version 2.0
 
-See [LICENSE](https://github.com/ansible-collections/logicmonitor/blob/main/LICENSE) to see the full text.
+See [LICENSE](https://github.com/ansible-collections/logicmonitor/blob/main/LICENSE-2.0) to see the full text.
