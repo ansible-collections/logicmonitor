@@ -1,7 +1,7 @@
 # LogicMonitor Ansible Collection
 
 [![Code of conduct](https://img.shields.io/badge/code%20of%20conduct-Ansible-silver.svg)](https://docs.ansible.com/ansible/latest/community/code_of_conduct.html)
-[![License](https://github.com/ansible-collections/logicmonitor/blob/main/LICENSE-2.0)](LICENSE)
+[![License](https://img.shields.io/badge/license-Apache%20License%202.0-blue)](LICENSE)
 
 This repository hosts the [LogicMonitor](https://logicmonitor.com) Ansible Collection of LogicMonitor's Ansible
 Integration.
